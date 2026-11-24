@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Atelier Damas — par Samuel Grosset</title>
+  <title>Acier Damas — Simulateur de Motifs & Forge | Samuel Grosset</title>
+  <meta name="description" content="Simulateur interactif de forge d'acier Damas (Découverte, Mosaïque et Plume en millimètres) conçu par Samuel Grosset." />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,13 +20,14 @@
       justify-content: space-between; gap: 10px;
     }
     .brand h1 {
-      font-family: 'Cormorant Garamond', serif; font-size: 1.35rem;
-      letter-spacing: 0.08em; color: #f3ede0; font-weight: 600;
+      font-family: 'Cormorant Garamond', serif; font-size: 1.38rem;
+      letter-spacing: 0.1em; color: #f3ede0; font-weight: 600;
     }
     .brand span {
       font-family: 'Cormorant Garamond', serif; font-style: italic;
-      font-size: 0.9rem; color: #c6a26b; margin-left: 8px;
+      font-size: 0.92rem; color: #c6a26b; margin-left: 8px; letter-spacing: 0.02em;
     }
+    .actions { display: flex; align-items: center; gap: 10px; }
     nav { display: flex; gap: 8px; }
     nav button {
       background: transparent; color: #b8c2be; border: 1px solid rgba(198,162,107,0.25);
@@ -35,19 +37,38 @@
     nav button.active, nav button:hover {
       background: rgba(198,162,107,0.16); color: #f3ede0; border-color: #c6a26b;
     }
+    .insta-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #c6a26b; text-decoration: none; font-size: 0.82rem;
+      border: 1px solid rgba(198,162,107,0.28); padding: 7px 11px;
+      border-radius: 6px; transition: all 0.2s;
+    }
+    .insta-link:hover {
+      background: rgba(198,162,107,0.16); border-color: #c6a26b; color: #f3ede0;
+    }
     iframe { flex: 1; width: 100%; border: none; background: #0b1614; }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">
-      <h1>ATELIER DAMAS<span>par Samuel Grosset</span></h1>
+      <h1>ACIER DAMAS<span>par Samuel Grosset</span></h1>
     </div>
-    <nav>
-      <button class="active" onclick="openTab('decouverte.html', this)">Découverte</button>
-      <button onclick="openTab('mosaique.html', this)">Mosaïque</button>
-      <button onclick="openTab('plume.html', this)">Plume</button>
-    </nav>
+    <div class="actions">
+      <nav>
+        <button class="active" onclick="openTab('decouverte.html', this)">Découverte</button>
+        <button onclick="openTab('mosaique.html', this)">Mosaïque</button>
+        <button onclick="openTab('plume.html', this)">Plume</button>
+      </nav>
+      <a class="insta-link" href="https://www.instagram.com/samuel_grosset/" target="_blank" rel="noopener" title="Voir mes créations sur Instagram">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+        <span>Instagram</span>
+      </a>
+    </div>
   </header>
   <iframe id="viewer" src="decouverte.html"></iframe>
   <script>
