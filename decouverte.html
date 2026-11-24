@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATELIER DAMAS — Module Découverte | par Samuel Grosset</title>
+
+  <!-- Typographies éditoriale et d'interface (avec repli système hors ligne) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       DIRECTION ARTISTIQUE — ATELIER DU LUXE & ARCHITECTURE
+       Vert minéral profond (#0b1614), cartes vert/bleu pétrole (#10201d),
+       filets et accents laiton brossé (#c6a26b), texte ivoire (#ece7dc)
+       ========================================================================== */
+    :root {
+      --bg-mineral: #0b1614;
+      --bg-card: #10201d;
+      --bg-petrol: #142a2d;
+      --bg-elevated: #152925;
+      --bg-input: #08110f;
+
+      --brass: #c6a26b;
+      --brass-light: #e0c18c;
+      --brass-dim: rgba(198, 162, 107, 0.28);
+      --brass-faint: rgba(198, 162, 107, 0.12);
+      --brass-glow: rgba(198, 162, 107, 0.07);
+
+      --text-ivory: #ece7dc;
+      --text-sage: #9eb0a9;
+      --text-muted: #6c8079;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-card: 0 14px 36px rgba(0, 0, 0, 0.42);
+
+      --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--bg-mineral);
+      background-image:
+        radial-gradient(ellipse 80% 45% at 50% -10%, rgba(20, 42, 45, 0.65), transparent),
+        radial-gradient(ellipse 55% 40% at 95% 100%, rgba(198, 162, 107, 0.06), transparent);
+      color: var(--text-ivory);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       CONTENEUR & EN-TÊTE ÉDITORIAL
+       ========================================================================== */
+    .shell {
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 18px 14px 64px;
+    }
+
+    @media (min-width: 768px) {
+      .shell {
+        padding: 28px 28px 72px;
+      }
+    }
+
+    .masthead {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--brass-dim);
+    }
+
+    @media (min-width: 820px) {
+      .masthead {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-emblem {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(145deg, var(--bg-petrol), var(--bg-card));
+      border: 1px solid var(--brass-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(224, 193, 140, 0.16);
+    }
+
+    .brand-title {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      color: var(--text-ivory);
+      line-height: 1.08;
+      text-transform: uppercase;
+    }
+
+    .brand-signature {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      color: var(--brass-light);
+      margin-top: 2px;
+    }
+
+    .summary-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--brass-dim);
+      border-radius: var(--radius-md);
+      padding: 9px 16px;
+      align-self: flex-start;
+    }
+
+    @media (min-width: 820px) {
+      .summary-pill {
+        align-self: auto;
+      }
+    }
+
+    .summary-metric {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .summary-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-sage);
+    }
+
+    .summary-val {
+      font-family: var(--font-serif);
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--brass-light);
+      line-height: 1.1;
+    }
+
+    .summary-sep {
+      width: 1px;
+      height: 26px;
+      background: var(--brass-dim);
+    }
+
+    /* ==========================================================================
+       NAVIGATION DES 3 ÉTAPES PÉDAGOGIQUES
+       ========================================================================== */
+    .stepper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    @media (min-width: 680px) {
+      .stepper {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+    }
+
+    .step-tab {
+      appearance: none;
+      background: var(--bg-card);
+      border: 1px solid rgba(198, 162, 107, 0.2);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      color: var(--text-sage);
+      font-family: var(--font-sans);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      transition: all 0.2s ease;
+      min-height: 58px;
+    }
+
+    .step-tab:hover {
+      border-color: var(--brass);
+      color: var(--text-ivory);
+      background: var(--bg-elevated);
+    }
+
+    .step-tab.active {
+      background: linear-gradient(145deg, var(--bg-petrol), var(--bg-elevated));
+      border-color: var(--brass);
+      color: var(--text-ivory);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.34);
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--bg-input);
+      border: 1px solid var(--brass-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--brass);
+      flex-shrink: 0;
+    }
+
+    .step-tab.active .step-num {
+      background: var(--brass);
+      color: var(--bg-mineral);
+      border-color: var(--brass);
+    }
+
+    .step-meta {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .step-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .step-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ==========================================================================
+       PANNEAUX & CARTES ARCHITECTURALES
+       ========================================================================== */
+    .step-panel {
+      display: none;
+      animation: fadeStep 0.24s ease;
+    }
+
+    .step-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeStep {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (min-width: 900px) {
+      .grid-main {
+        grid-template-columns: 420px 1fr;
+        gap: 24px;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--brass-dim);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(198, 162, 107, 0.14);
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-ivory);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title svg {
+      color: var(--brass);
+      flex-shrink: 0;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--brass-light);
+      background: var(--brass-faint);
+      border: 1px solid var(--brass-dim);
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .intro-text {
+      font-size: 0.84rem;
+      color: var(--text-sage);
+      margin-bottom: 16px;
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       ÉTAPE 1 : BOUTONS ACIER CARBONE / NICKEL & SCHÉMA AVEC FLÈCHES
+       ========================================================================== */
+    .steel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .steel-btn {
+      appearance: none;
+      text-align: left;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .steel-btn.carbon {
+      background: linear-gradient(145deg, #1a1f1e, #0e1312);
+      border: 1px solid rgba(198, 162, 107, 0.42);
+      color: var(--text-ivory);
+    }
+
+    .steel-btn.nickel {
+      background: linear-gradient(145deg, #dde3e1, #b7c3c0);
+      border: 1px solid #eef2f1;
+      color: #0b1614;
+    }
+
+    .steel-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.36);
+    }
+
+    .steel-btn:active {
+      transform: translateY(0);
+    }
+
+    .steel-btn-title {
+      font-family: var(--font-serif);
+      font-size: 1.18rem;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .steel-btn-desc {
+      font-size: 0.73rem;
+      line-height: 1.38;
+      opacity: 0.86;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .btn {
+      appearance: none;
+      background: var(--bg-input);
+      border: 1px solid var(--brass-dim);
+      color: var(--text-sage);
+      border-radius: var(--radius-sm);
+      padding: 8px 13px;
+      font-family: var(--font-sans);
+      font-size: 0.79rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      border-color: var(--brass);
+      color: var(--text-ivory);
+      background: var(--brass-glow);
+    }
+
+    .btn.active {
+      background: var(--bg-petrol);
+      border-color: var(--brass);
+      color: var(--brass-light);
+      font-weight: 600;
+    }
+
+    .btn.brass {
+      background: linear-gradient(135deg, var(--brass), #a7844e);
+      border-color: var(--brass-light);
+      color: var(--bg-mineral);
+      font-weight: 600;
+    }
+
+    .btn.brass:hover {
+      filter: brightness(1.08);
+    }
+
+    /* Zone visuelle de la trousse avec flèches explicatives */
+    .stage-box {
+      background: var(--bg-input);
+      border: 1px solid rgba(198, 162, 107, 0.18);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stage-box svg,
+    .stage-box canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+    }
+
+    .stage-caption {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* ==========================================================================
+       CONTRÔLES & CURSEURS TACTILES
+       ========================================================================== */
+    .controls-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ctrl-box {
+      background: var(--bg-elevated);
+      border: 1px solid rgba(198, 162, 107, 0.16);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .ctrl-box:focus-within {
+      border-color: var(--brass);
+    }
+
+    .ctrl-box.highlight {
+      border-color: rgba(198, 162, 107, 0.48);
+      background: linear-gradient(180deg, rgba(198, 162, 107, 0.09), var(--bg-elevated));
+    }
+
+    .ctrl-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .ctrl-label {
+      font-size: 0.83rem;
+      font-weight: 500;
+      color: var(--text-ivory);
+    }
+
+    .ctrl-val {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--brass-light);
+      background: var(--bg-input);
+      border: 1px solid var(--brass-dim);
+      padding: 2px 9px;
+      border-radius: 5px;
+      white-space: nowrap;
+    }
+
+    .ctrl-hint {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.71rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .step-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 7px;
+      border: 1px solid var(--brass-dim);
+      background: var(--bg-input);
+      color: var(--brass-light);
+      font-size: 1.05rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.14s ease;
+    }
+
+    .step-btn:hover {
+      border-color: var(--brass);
+      background: var(--brass-faint);
+    }
+
+    .step-btn:active {
+      transform: scale(0.93);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #233b35;
+      border-radius: 999px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brass-light);
+      border: 2px solid var(--bg-mineral);
+      box-shadow: 0 0 0 2px rgba(198, 162, 107, 0.35);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--brass-light);
+      border: 2px solid var(--bg-mineral);
+      box-shadow: 0 0 0 2px rgba(198, 162, 107, 0.35);
+      cursor: pointer;
+    }
+
+    .seg-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .seg-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 0.83rem;
+      color: var(--text-ivory);
+      user-select: none;
+    }
+
+    .check-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--brass);
+      cursor: pointer;
+    }
+
+    /* Compteur monumental de couches */
+    .layers-hero {
+      background: linear-gradient(135deg, var(--bg-petrol), var(--bg-elevated));
+      border: 1px solid var(--brass-dim);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .layers-hero-num {
+      font-family: var(--font-serif);
+      font-size: 2.3rem;
+      font-weight: 700;
+      color: var(--brass-light);
+      line-height: 1;
+    }
+
+    .layers-hero-lbl {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-sage);
+    }
+
+    /* Balance visuelle Carbone / Nickel */
+    .chroma-box {
+      margin-top: 14px;
+      background: var(--bg-elevated);
+      border: 1px solid rgba(198, 162, 107, 0.18);
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+    }
+
+    .chroma-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--text-ivory);
+      margin-bottom: 6px;
+    }
+
+    .chroma-track {
+      width: 100%;
+      height: 9px;
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      border: 1px solid var(--brass-dim);
+      background: var(--bg-input);
+    }
+
+    .chroma-dark { background: #171c1b; height: 100%; transition: width 0.2s ease; }
+    .chroma-light { background: #e2e7e5; height: 100%; transition: width 0.2s ease; }
+
+    /* Navigation bas d'étape */
+    .step-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(198, 162, 107, 0.16);
+    }
+
+    .hidden { display: none !important; }
+
+    /* Toast discret */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(72px);
+      background: var(--bg-petrol);
+      border: 1px solid var(--brass);
+      color: var(--text-ivory);
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- ======================================================================
+         EN-TÊTE ÉDITORIAL
+         ====================================================================== -->
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-emblem" aria-hidden="true">
+          <!-- Emblème géométrique sobre en laiton brossé (aucune flamme) -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c6a26b" stroke-width="1.35">
+            <rect x="3" y="3" width="18" height="18" rx="1.5" stroke-opacity="0.65" />
+            <path d="M3 9c4-3 8 3 12 0s4-1 6-1" />
+            <path d="M3 15c4-3 8 3 12 0s4-1 6-1" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">ATELIER DAMAS — Module Découverte</h1>
+          <p class="brand-signature">par Samuel Grosset</p>
+        </div>
+      </div>
+
+      <div class="summary-pill" aria-label="Résumé de la trousse">
+        <div class="summary-metric">
+          <span class="summary-lbl">Trousse de départ</span>
+          <span class="summary-val" id="head-base">9 couches</span>
+        </div>
+        <span class="summary-sep"></span>
+        <div class="summary-metric">
+          <span class="summary-lbl">Après replis</span>
+          <span class="summary-val" id="head-total">36 couches</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         NAVIGATION DES 3 ÉTAPES
+         ====================================================================== -->
+    <nav class="stepper" role="tablist" aria-label="Étapes de découverte">
+      <button class="step-tab active" data-step="1" role="tab" aria-selected="true" type="button">
+        <span class="step-num">1</span>
+        <span class="step-meta">
+          <span class="step-name">La Recette</span>
+          <span class="step-sub">Empilage des aciers</span>
+        </span>
+      </button>
+      <button class="step-tab" data-step="2" role="tab" aria-selected="false" type="button">
+        <span class="step-num">2</span>
+        <span class="step-meta">
+          <span class="step-name">Soudure &amp; Replis</span>
+          <span class="step-sub">Étirage &amp; multiplication</span>
+        </span>
+      </button>
+      <button class="step-tab" data-step="3" role="tab" aria-selected="false" type="button">
+        <span class="step-num">3</span>
+        <span class="step-meta">
+          <span class="step-name">La Magie du Motif</span>
+          <span class="step-sub">Révélation sur lame</span>
+        </span>
+      </button>
+    </nav>
+
+    <!-- ======================================================================
+         ÉTAPE 1 — LA RECETTE (EMPILAGE DES ACIERS)
+         ====================================================================== -->
+    <section id="step-1" class="step-panel active">
+      <div class="grid-main">
+        <!-- Colonne gauche : boutons d'empilage & préréglages -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 12 12 17 22 12" />
+                <polyline points="2 17 12 22 22 17" />
+              </svg>
+              Composer votre trousse
+            </h2>
+            <span class="badge">Étape 1</span>
+          </div>
+
+          <p class="intro-text">
+            L'acier Damas naît de l'union de deux nuances d'acier empilées en mille-feuille. Ajoutez les couches dans l'ordre de votre choix pour dessiner le contraste futur de la lame.
+          </p>
+
+          <div class="steel-grid">
+            <button id="btn-add-carbon" class="steel-btn carbon" type="button">
+              <span class="steel-btn-title">+ Acier Carbone</span>
+              <span class="steel-btn-desc">s'oxyde à l'acide, crée les zones sombres</span>
+            </button>
+
+            <button id="btn-add-nickel" class="steel-btn nickel" type="button">
+              <span class="steel-btn-title">+ Acier Nickel</span>
+              <span class="steel-btn-desc">résiste à l'acide, crée les lignes lumineuses</span>
+            </button>
+          </div>
+
+          <div class="btn-row" style="margin-bottom: 16px;">
+            <button id="btn-pop" class="btn" type="button">Retirer la dernière couche</button>
+            <button id="btn-reset" class="btn" type="button">Réinitialiser</button>
+          </div>
+
+          <div class="ctrl-box">
+            <div class="ctrl-top" style="margin-bottom: 8px;">
+              <span class="ctrl-label">Préréglages rapides</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn active" type="button" data-preset="classique">Alternance classique</button>
+              <button class="btn" type="button" data-preset="coeur_sombre">Cœur sombre</button>
+              <button class="btn" type="button" data-preset="dominant_argent">Dominant argent</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne droite : aperçu temps réel de la trousse avec flèches explicatives -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Aperçu de la trousse empilée</h2>
+            <span class="badge" id="s1-count-badge">9 couches</span>
+          </div>
+
+          <div class="stage-box">
+            <svg id="svg-stack" viewBox="0 0 640 310" role="img" aria-label="Schéma de la trousse d'acier empilée"></svg>
+            <p class="stage-caption">Touchez directement une couche sur le schéma pour inverser son acier (Carbone ↔ Nickel).</p>
+          </div>
+
+          <div class="chroma-box">
+            <div class="chroma-head">
+              <span id="s1-chroma-c">Acier Carbone (sombre) : 56 %</span>
+              <span id="s1-chroma-n">Acier Nickel (lumineux) : 44 %</span>
+            </div>
+            <div class="chroma-track">
+              <div id="s1-bar-c" class="chroma-dark" style="width: 56%;"></div>
+              <div id="s1-bar-n" class="chroma-light" style="width: 44%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <span style="font-size: 0.78rem; color: var(--text-muted);">Étape 1 sur 3 — La Recette</span>
+        <button class="btn brass" data-goto="2" type="button">Étape suivante : Soudure &amp; Replis →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         ÉTAPE 2 — SOUDURE & REPLIS
+         ====================================================================== -->
+    <section id="step-2" class="step-panel">
+      <div class="grid-main">
+        <!-- Colonne gauche : étirage & replis -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="6" width="18" height="12" rx="1.5" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+              </svg>
+              Soudure &amp; Replis
+            </h2>
+            <span class="badge">Étape 2</span>
+          </div>
+
+          <p class="intro-text">
+            La trousse est soudée à chaud, étirée sous la presse, puis coupée et repliée sur elle-même pour multiplier la finesse des strates.
+          </p>
+
+          <div class="controls-stack">
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="s2-stretch">Écrasement &amp; étirage de la trousse</label>
+                <span class="ctrl-val" id="out-s2-stretch">55 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="s2-stretch" data-dir="-1" aria-label="Diminuer l'étirage">−</button>
+                <input id="s2-stretch" type="range" min="0" max="100" step="5" value="55" />
+                <button class="step-btn" type="button" data-target="s2-stretch" data-dir="1" aria-label="Augmenter l'étirage">+</button>
+              </div>
+              <div class="ctrl-hint"><span>Trousse épaisse</span><span>Compression des couches</span><span>Barreau fin</span></div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top" style="margin-bottom: 8px;">
+                <span class="ctrl-label">Coupes &amp; replis (1re passe)</span>
+              </div>
+              <div class="seg-4">
+                <button class="btn" type="button" data-fold="2">× 2</button>
+                <button class="btn" type="button" data-fold="3">× 3</button>
+                <button class="btn active" type="button" data-fold="4">× 4</button>
+                <button class="btn" type="button" data-fold="5">× 5</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <label class="check-row">
+                <span>Activer une 2e passe de replis (haute finesse)</span>
+                <input id="s2-pass2" type="checkbox" />
+              </label>
+            </div>
+
+            <div class="layers-hero">
+              <div>
+                <div class="layers-hero-lbl">Multiplication obtenue</div>
+                <div id="s2-formula" style="font-size: 0.8rem; color: var(--text-sage); margin-top: 3px;">9 couches × 4 replis</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="layers-hero-num" id="s2-total">36</div>
+                <div class="layers-hero-lbl">couches</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne droite : schéma animé de la coupe du barreau -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Schéma de coupe du barreau forgé</h2>
+            <span class="badge" id="s2-bar-badge">36 couches</span>
+          </div>
+
+          <div class="stage-box" style="padding: 18px;">
+            <canvas id="cv-billet" width="660" height="240"></canvas>
+            <p class="stage-caption">
+              Déplacez le curseur d'écrasement pour observer la compression des strates et l'allongement du barreau.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn" data-goto="1" type="button">← Étape précédente</button>
+        <button class="btn brass" data-goto="3" type="button">Étape suivante : La Magie du Motif →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         ÉTAPE 3 — LA MAGIE DU MOTIF & RÉVÉLATION SUR LAME
+         ====================================================================== -->
+    <section id="step-3" class="step-panel">
+      <div class="grid-main">
+        <!-- Colonne gauche : choix du motif & curseurs -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M3 18c6-1 13-6 18-13-1 6-4 12-10 14-3 1-6 0-8-1z" />
+              </svg>
+              Choix du motif
+            </h2>
+            <span class="badge">Étape 3</span>
+          </div>
+
+          <div class="seg-3" style="margin-bottom: 14px;">
+            <button class="btn active" type="button" data-pattern="torsade">Torsade</button>
+            <button class="btn" type="button" data-pattern="goutte">Goutte d'eau</button>
+            <button class="btn" type="button" data-pattern="echelle">Échelle</button>
+          </div>
+
+          <div class="controls-stack">
+            <!-- Paramètres Torsade -->
+            <div id="ctrl-torsade" class="controls-stack">
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="s3-turns">Nombre de tours</label>
+                  <span class="ctrl-val" id="out-s3-turns">6 tours</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="s3-turns" data-dir="-1">−</button>
+                  <input id="s3-turns" type="range" min="1" max="14" step="1" value="6" />
+                  <button class="step-btn" type="button" data-target="s3-turns" data-dir="1">+</button>
+                </div>
+                <div class="ctrl-hint"><span>Ouvert</span><span>Serrage de la torsade</span><span>Très serré</span></div>
+              </div>
+            </div>
+
+            <!-- Paramètres Goutte d'eau -->
+            <div id="ctrl-goutte" class="controls-stack hidden">
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="s3-drop-depth">Profondeur des trous</label>
+                  <span class="ctrl-val" id="out-s3-ddepth">60 %</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="s3-drop-depth" data-dir="-1">−</button>
+                  <input id="s3-drop-depth" type="range" min="15" max="100" step="5" value="60" />
+                  <button class="step-btn" type="button" data-target="s3-drop-depth" data-dir="1">+</button>
+                </div>
+              </div>
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="s3-drop-dens">Densité des gouttes</label>
+                  <span class="ctrl-val" id="out-s3-ddens">Niveau 6</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="s3-drop-dens" data-dir="-1">−</button>
+                  <input id="s3-drop-dens" type="range" min="2" max="12" step="1" value="6" />
+                  <button class="step-btn" type="button" data-target="s3-drop-dens" data-dir="1">+</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paramètres Échelle -->
+            <div id="ctrl-echelle" class="controls-stack hidden">
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="s3-lad-depth">Profondeur des rainures</label>
+                  <span class="ctrl-val" id="out-s3-ldepth">60 %</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="s3-lad-depth" data-dir="-1">−</button>
+                  <input id="s3-lad-depth" type="range" min="15" max="100" step="5" value="60" />
+                  <button class="step-btn" type="button" data-target="s3-lad-depth" data-dir="1">+</button>
+                </div>
+              </div>
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="s3-lad-space">Espacement des rainures</label>
+                  <span class="ctrl-val" id="out-s3-lspace">Niveau 6</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="s3-lad-space" data-dir="-1">−</button>
+                  <input id="s3-lad-space" type="range" min="2" max="12" step="1" value="6" />
+                  <button class="step-btn" type="button" data-target="s3-lad-space" data-dir="1">+</button>
+                </div>
+                <div class="ctrl-hint"><span>Large</span><span>Rythme de l'échelle</span><span>Serré</span></div>
+              </div>
+            </div>
+
+            <!-- Curseur commun : Meulage / Émouture -->
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="s3-grind">Meulage / Émouture</label>
+                <span class="ctrl-val" id="out-s3-grind">45 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="s3-grind" data-dir="-1">−</button>
+                <input id="s3-grind" type="range" min="0" max="100" step="2" value="45" />
+                <button class="step-btn" type="button" data-target="s3-grind" data-dir="1">+</button>
+              </div>
+              <div class="ctrl-hint"><span>Peau de forge</span><span>Descendre dans l'acier</span><span>Cœur du barreau</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne droite : Rendu temps réel sur lame de chef -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Révélation sur lame de couteau de chef</h2>
+            <span class="badge" id="s3-pattern-badge">Torsade · 36 couches</span>
+          </div>
+
+          <div class="stage-box" style="padding: 18px 12px;">
+            <canvas id="cv-blade" width="760" height="260"></canvas>
+            <p class="stage-caption" id="s3-caption">
+              Torsade : en descendant au cœur du barreau par meulage, les couches enroulées s'ouvrent en étoiles successives.
+            </p>
+          </div>
+
+          <div class="chroma-box">
+            <div class="chroma-head">
+              <span id="s3-chroma-c">Acier Carbone (sombre) : 55 %</span>
+              <span id="s3-chroma-n">Acier Nickel (lumineux) : 45 %</span>
+            </div>
+            <div class="chroma-track">
+              <div id="s3-bar-c" class="chroma-dark" style="width: 55%;"></div>
+              <div id="s3-bar-n" class="chroma-light" style="width: 45%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn" data-goto="2" type="button">← Étape précédente</button>
+        <button class="btn brass" data-goto="1" type="button">Recommencer la recette</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /**
+     * =========================================================================
+     * ATELIER DAMAS — MODULE DÉCOUVERTE | par Samuel Grosset
+     * Simulation 2D temps réel (zéro millimètre, 100 % autonome)
+     * =========================================================================
+     */
+    (function () {
+      'use strict';
+
+      // Préréglages de trousse : 0 = Acier Carbone (noir), 1 = Acier Nickel (argent)
+      const PRESETS = {
+        classique:       [0, 1, 0, 1, 0, 1, 0, 1, 0],
+        coeur_sombre:    [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+        dominant_argent: [1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]
+      };
+
+      const state = {
+        step: 1,
+        layers: PRESETS.classique.slice(),
+        stretch: 55,
+        folds: 4,
+        pass2: false,
+        pattern: 'torsade', // torsade | goutte | echelle
+        turns: 6,
+        dropDepth: 60,
+        dropDens: 6,
+        ladDepth: 60,
+        ladSpace: 6,
+        grind: 45
+      };
+
+      // Table LUT haute précision pour échantillonnage instantané
+      const LUT_N = 1024;
+      const stackLUT = new Uint8Array(LUT_N);
+      const edgeLUT = new Float32Array(LUT_N);
+
+      const toastEl = document.getElementById('toast');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2100);
+      }
+
+      /* =======================================================================
+         1. CONSTRUCTION DE LA LUT & ÉCHANTILLONNAGE
+         ======================================================================= */
+      function buildLUT() {
+        const arr = state.layers.length > 0 ? state.layers : [0, 1];
+        const n = arr.length;
+        for (let p = 0; p < LUT_N; p++) {
+          const t = (p + 0.5) / LUT_N;
+          const f = t * n;
+          const idx = Math.min(n - 1, Math.floor(f));
+          const frac = f - idx;
+          stackLUT[p] = arr[idx];
+          edgeLUT[p] = Math.min(1, Math.min(frac, 1 - frac) * 18);
+        }
+      }
+
+      function getMultiplier() {
+        return state.folds * (state.pass2 ? state.folds : 1);
+      }
+
+      function sampleLayer(val) {
+        const mult = getMultiplier();
+        const scaled = val * mult;
+        const wrapped = scaled - Math.floor(scaled);
+        const idx = Math.min(LUT_N - 1, (wrapped * LUT_N) | 0);
+        return { steel: stackLUT[idx], edge: edgeLUT[idx] };
+      }
+
+      /* =======================================================================
+         2. ÉTAPE 1 — SCHÉMA SVG DE LA TROUSSE AVEC FLÈCHES EXPLICATIVES
+         ======================================================================= */
+      function renderStackSVG() {
+        const svg = document.getElementById('svg-stack');
+        const arr = state.layers;
+        const n = arr.length;
+
+        const pileW = 240;
+        const pileH = Math.min(230, Math.max(120, n * 18));
+        const x0 = (640 - pileW) / 2;
+        const y0 = (310 - pileH) / 2;
+        const rowH = pileH / n;
+
+        // Trouve une couche carbone et une couche nickel pour pointer les flèches
+        let carbonIdx = -1;
+        let nickelIdx = -1;
+        for (let i = n - 1; i >= 0; i--) {
+          if (arr[i] === 0 && carbonIdx === -1) carbonIdx = i;
+          if (arr[i] === 1 && nickelIdx === -1) nickelIdx = i;
+        }
+
+        let layersMarkup = '';
+        for (let i = 0; i < n; i++) {
+          // Affichage du haut (index n-1) vers le bas (index 0)
+          const visRow = n - 1 - i;
+          const y = y0 + visRow * rowH;
+          const isNickel = arr[i] === 1;
+          const fill = isNickel ? 'url(#grad-nickel)' : 'url(#grad-carbon)';
+          layersMarkup += `
+            <rect
+              x="${x0}" y="${y}" width="${pileW}" height="${rowH}"
+              fill="${fill}" stroke="#08110f" stroke-width="0.9"
+              style="cursor:pointer;"
+              data-layer-idx="${i}"
+            />
+          `;
+        }
+
+        // Flèche gauche → Acier Carbone
+        let leftArrow = '';
+        if (carbonIdx !== -1) {
+          const cy = y0 + (n - 1 - carbonIdx + 0.5) * rowH;
+          leftArrow = `
+            <line x1="168" y1="${cy}" x2="${x0 - 8}" y2="${cy}" stroke="#c6a26b" stroke-width="1.3" />
+            <polygon points="${x0 - 4},${cy} ${x0 - 12},${cy - 4} ${x0 - 12},${cy + 4}" fill="#c6a26b" />
+            <text x="158" y="${cy - 4}" text-anchor="end" fill="#ece7dc" font-size="13" font-family="Cormorant Garamond, Georgia, serif" font-weight="600">Acier Carbone</text>
+            <text x="158" y="${cy + 12}" text-anchor="end" fill="#9eb0a9" font-size="10.5" font-family="Inter, sans-serif">Zones sombres</text>
+          `;
+        }
+
+        // Flèche droite → Acier Nickel
+        let rightArrow = '';
+        if (nickelIdx !== -1) {
+          const ny = y0 + (n - 1 - nickelIdx + 0.5) * rowH;
+          const rx = x0 + pileW;
+          rightArrow = `
+            <line x1="${rx + 8}" y1="${ny}" x2="472" y2="${ny}" stroke="#c6a26b" stroke-width="1.3" />
+            <polygon points="${rx + 4},${ny} ${rx + 12},${ny - 4} ${rx + 12},${ny + 4}" fill="#c6a26b" />
+            <text x="482" y="${ny - 4}" text-anchor="start" fill="#ece7dc" font-size="13" font-family="Cormorant Garamond, Georgia, serif" font-weight="600">Acier Nickel</text>
+            <text x="482" y="${ny + 12}" text-anchor="start" fill="#9eb0a9" font-size="10.5" font-family="Inter, sans-serif">Lignes lumineuses</text>
+          `;
+        }
+
+        svg.innerHTML = `
+          <defs>
+            <linearGradient id="grad-carbon" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#151b1a" />
+              <stop offset="50%" stop-color="#242c2a" />
+              <stop offset="100%" stop-color="#151b1a" />
+            </linearGradient>
+            <linearGradient id="grad-nickel" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#bcc7c4" />
+              <stop offset="50%" stop-color="#e7ecea" />
+              <stop offset="100%" stop-color="#bcc7c4" />
+            </linearGradient>
+          </defs>
+          <rect width="640" height="310" fill="#08110f" />
+          ${layersMarkup}
+          <rect x="${x0}" y="${y0}" width="${pileW}" height="${pileH}" fill="none" stroke="#c6a26b" stroke-width="1.4" rx="2" />
+          ${leftArrow}
+          ${rightArrow}
+        `;
+
+        // Clic sur une couche pour l'inverser
+        svg.querySelectorAll('[data-layer-idx]').forEach(rect => {
+          rect.addEventListener('click', () => {
+            const idx = parseInt(rect.dataset.layerIdx, 10);
+            state.layers[idx] = state.layers[idx] === 0 ? 1 : 0;
+            document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+            updateAll();
+          });
+        });
+      }
+
+      /* =======================================================================
+         3. ÉTAPE 2 — SCHÉMA DE COUPE DU BARREAU ÉTIRÉ & REPLIÉ
+         ======================================================================= */
+      function renderBilletCanvas() {
+        const cv = document.getElementById('cv-billet');
+        const ctx = cv.getContext('2d');
+        const w = cv.width, h = cv.height;
+
+        ctx.fillStyle = '#08110f';
+        ctx.fillRect(0, 0, w, h);
+
+        const s = state.stretch / 100; // 0 .. 1
+        const barW = Math.round(w * (0.34 + 0.56 * s));
+        const barH = Math.round(h * (0.74 - 0.44 * s));
+        const x0 = Math.round((w - barW) / 2);
+        const y0 = Math.round((h - barH) / 2);
+
+        const img = ctx.createImageData(barW, barH);
+        const d = img.data;
+
+        for (let py = 0; py < barH; py++) {
+          const v = py / Math.max(1, barH - 1);
+          const sample = sampleLayer(v);
+          for (let px = 0; px < barW; px++) {
+            const i = (py * barW + px) * 4;
+            const grain = (((px * 73856093) ^ (py * 19349663)) & 15) - 7;
+            if (sample.steel === 0) {
+              const b = 22 + grain * 0.35;
+              d[i] = b; d[i + 1] = b + 3; d[i + 2] = b + 4;
+            } else {
+              const b = 216 + grain * 0.45;
+              d[i] = b; d[i + 1] = b + 4; d[i + 2] = b + 6;
+            }
+            d[i + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, x0, y0);
+
+        // Contour laiton fin
+        ctx.strokeStyle = 'rgba(198, 162, 107, 0.75)';
+        ctx.lineWidth = 1.4;
+        ctx.strokeRect(x0 - 0.5, y0 - 0.5, barW + 1, barH + 1);
+
+        // Petites flèches de compression en haut et en bas pour visualiser la presse
+        ctx.strokeStyle = 'rgba(198, 162, 107, 0.5)';
+        ctx.fillStyle = '#c6a26b';
+        ctx.lineWidth = 1.2;
+        const cx = w / 2;
+        if (y0 > 24) {
+          ctx.beginPath(); ctx.moveTo(cx, 10); ctx.lineTo(cx, y0 - 7); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(cx, y0 - 4); ctx.lineTo(cx - 4, y0 - 11); ctx.lineTo(cx + 4, y0 - 11); ctx.closePath(); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(cx, h - 10); ctx.lineTo(cx, y0 + barH + 7); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(cx, y0 + barH + 4); ctx.lineTo(cx - 4, y0 + barH + 11); ctx.lineTo(cx + 4, y0 + barH + 11); ctx.closePath(); ctx.fill();
+        }
+      }
+
+      /* =======================================================================
+         4. ÉTAPE 3 — RÉVÉLATION 2D SUR LAME DE COUTEAU DE CHEF
+         ======================================================================= */
+      function traceChefBlade(ctx, w, h) {
+        const left = 64;
+        const right = w - 24;
+        const spineY = h * 0.22;
+        const heelY = h * 0.80;
+        const choilX = left + 56;
+        const tipY = h * 0.35;
+
+        ctx.beginPath();
+        ctx.moveTo(left, spineY + 4);
+        ctx.quadraticCurveTo(w * 0.56, spineY - 4, right, tipY);
+        ctx.bezierCurveTo(w * 0.80, h * 0.72, w * 0.44, heelY + 6, choilX, heelY);
+        ctx.quadraticCurveTo(choilX - 15, heelY - 4, choilX - 17, h * 0.56);
+        ctx.lineTo(left, h * 0.56);
+        ctx.closePath();
+      }
+
+      function drawChefHandle(ctx, w, h) {
+        const left = 64;
+        const topY = h * 0.22 + 4;
+        const botY = h * 0.56;
+        const midY = (topY + botY) / 2;
+
+        ctx.save();
+        const brassGrad = ctx.createLinearGradient(0, topY, 0, botY);
+        brassGrad.addColorStop(0, '#967542');
+        brassGrad.addColorStop(0.5, '#e0c18c');
+        brassGrad.addColorStop(1, '#856636');
+        ctx.fillStyle = brassGrad;
+        ctx.fillRect(left - 14, topY, 14, botY - topY);
+
+        const woodGrad = ctx.createLinearGradient(0, topY - 2, 0, botY + 2);
+        woodGrad.addColorStop(0, '#101d1a');
+        woodGrad.addColorStop(0.5, '#1d322d');
+        woodGrad.addColorStop(1, '#091210');
+        ctx.fillStyle = woodGrad;
+        ctx.beginPath();
+        ctx.roundRect(10, topY - 1, left - 24, botY - topY + 2, [6, 0, 0, 6]);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(198, 162, 107, 0.38)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#c6a26b';
+        ctx.beginPath();
+        ctx.arc(30, midY, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function renderBladeCanvas() {
+        const cv = document.getElementById('cv-blade');
+        const ctx = cv.getContext('2d');
+        const w = cv.width, h = cv.height;
+
+        ctx.fillStyle = '#08110f';
+        ctx.fillRect(0, 0, w, h);
+
+        const off = document.createElement('canvas');
+        off.width = w;
+        off.height = h;
+        const octx = off.getContext('2d');
+        const img = octx.createImageData(w, h);
+        const data = img.data;
+
+        const xMin = 64, xMax = w - 24;
+        const yMin = h * 0.18, yMax = h * 0.84;
+        const spanX = xMax - xMin, spanY = yMax - yMin;
+
+        const grind = state.grind / 100;
+        let darkPx = 0, totalPx = 0;
+
+        for (let py = 0; py < h; py++) {
+          if (py < yMin - 2 || py > yMax + 2) continue;
+          const yn = ((py - yMin) / spanY) * 2 - 1;
+          for (let px = 0; px < w; px++) {
+            if (px < xMin - 2 || px > xMax + 2) continue;
+            const xn = (px - xMin) / spanX;
+
+            const bevelDepth = grind * 0.72 + Math.max(0, yn) * 0.24;
+            let zSample = 0.5;
+
+            if (state.pattern === 'torsade') {
+              const angle = xn * state.turns * Math.PI * 2;
+              const y3d = yn * 0.92;
+              const z3d = (1 - bevelDepth) * 0.85;
+              const vOrig = y3d * Math.cos(angle) - z3d * Math.sin(angle);
+              zSample = (vOrig + 1.2) * 0.42;
+            } else if (state.pattern === 'goutte') {
+              const freqX = 3.2 + state.dropDens * 0.95;
+              const freqY = 1.5 + state.dropDens * 0.36;
+              const gx = xn * freqX;
+              const gy = (yn + 1) * 0.5 * freqY;
+              const row = Math.floor(gy);
+              const shiftX = (row & 1) ? 0.5 : 0.0;
+              const fx = (gx + shiftX) - Math.floor(gx + shiftX) - 0.5;
+              const fy = gy - row - 0.5;
+              const dimple = Math.exp(-(fx * fx + fy * fy) * 13.5);
+              const amp = 0.16 + (state.dropDepth / 100) * 0.42;
+              zSample = bevelDepth * 0.62 + dimple * amp + 0.03 * Math.sin(xn * 11 + yn * 4);
+            } else {
+              const freq = 3.5 + state.ladSpace * 1.25;
+              const wave = 0.5 + 0.5 * Math.cos(xn * freq * Math.PI * 2);
+              const amp = 0.16 + (state.ladDepth / 100) * 0.36;
+              zSample = bevelDepth * 0.6 + Math.pow(wave, 1.35) * amp + Math.abs(yn) * 0.14;
+            }
+
+            const sample = sampleLayer(zSample);
+            totalPx++;
+            if (sample.steel === 0) darkPx++;
+
+            const idx = (py * w + px) * 4;
+            const grain = (((px * 73856093) ^ (py * 19349663)) & 15) - 7;
+            const sheen = Math.exp(-Math.pow(yn + 0.18, 2) * 5.2) * 17;
+            const edgeHi = (1 - sample.edge) * 12;
+
+            if (sample.steel === 0) {
+              const b = 22 + grain * 0.38 + sheen * 0.3 - edgeHi * 0.3;
+              data[idx] = Math.max(10, Math.min(255, b));
+              data[idx + 1] = Math.max(12, Math.min(255, b + 3));
+              data[idx + 2] = Math.max(13, Math.min(255, b + 4));
+            } else {
+              const b = 212 + grain * 0.45 + sheen + edgeHi;
+              data[idx] = Math.max(0, Math.min(255, b));
+              data[idx + 1] = Math.max(0, Math.min(255, b + 4));
+              data[idx + 2] = Math.max(0, Math.min(255, b + 6));
+            }
+            data[idx + 3] = 255;
+          }
+        }
+        octx.putImageData(img, 0, 0);
+
+        ctx.save();
+        traceChefBlade(ctx, w, h);
+        ctx.clip();
+        ctx.drawImage(off, 0, 0);
+
+        // Ligne d'émouture subtile
+        ctx.strokeStyle = 'rgba(236, 231, 220, 0.24)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(120, h * 0.79);
+        ctx.bezierCurveTo(w * 0.44, h * 0.82, w * 0.80, h * 0.71, w - 26, h * 0.35);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        traceChefBlade(ctx, w, h);
+        ctx.strokeStyle = 'rgba(224, 193, 140, 0.68)';
+        ctx.lineWidth = 1.3;
+        ctx.stroke();
+        ctx.restore();
+
+        drawChefHandle(ctx, w, h);
+
+        if (totalPx > 0) {
+          const pctC = Math.round((darkPx / totalPx) * 100);
+          const pctN = 100 - pctC;
+          document.getElementById('s3-chroma-c').textContent = `Acier Carbone (sombre) : ${pctC} %`;
+          document.getElementById('s3-chroma-n').textContent = `Acier Nickel (lumineux) : ${pctN} %`;
+          document.getElementById('s3-bar-c').style.width = `${pctC}%`;
+          document.getElementById('s3-bar-n').style.width = `${pctN}%`;
+        }
+      }
+
+      /* =======================================================================
+         5. MISE À JOUR GLOBALE
+         ======================================================================= */
+      function updateAll() {
+        buildLUT();
+        const baseCount = state.layers.length;
+        const mult = getMultiplier();
+        const totalLayers = baseCount * mult;
+
+        // En-tête
+        document.getElementById('head-base').textContent = `${baseCount} couches`;
+        document.getElementById('head-total').textContent = `${totalLayers} couches`;
+
+        // Étape 1
+        document.getElementById('s1-count-badge').textContent = `${baseCount} couches`;
+        const nbC = state.layers.filter(v => v === 0).length;
+        const pctC1 = Math.round((nbC / Math.max(1, baseCount)) * 100);
+        const pctN1 = 100 - pctC1;
+        document.getElementById('s1-chroma-c').textContent = `Acier Carbone (sombre) : ${pctC1} %`;
+        document.getElementById('s1-chroma-n').textContent = `Acier Nickel (lumineux) : ${pctN1} %`;
+        document.getElementById('s1-bar-c').style.width = `${pctC1}%`;
+        document.getElementById('s1-bar-n').style.width = `${pctN1}%`;
+        if (state.step === 1) renderStackSVG();
+
+        // Étape 2
+        document.getElementById('out-s2-stretch').textContent = `${state.stretch} %`;
+        document.getElementById('s2-total').textContent = `${totalLayers}`;
+        document.getElementById('s2-bar-badge').textContent = `${totalLayers} couches`;
+        document.getElementById('s2-formula').textContent = state.pass2
+          ? `${baseCount} couches × ${state.folds} × ${state.folds} (2 passes)`
+          : `${baseCount} couches × ${state.folds} replis`;
+        if (state.step === 2) renderBilletCanvas();
+
+        // Étape 3
+        document.getElementById('ctrl-torsade').classList.toggle('hidden', state.pattern !== 'torsade');
+        document.getElementById('ctrl-goutte').classList.toggle('hidden', state.pattern !== 'goutte');
+        document.getElementById('ctrl-echelle').classList.toggle('hidden', state.pattern !== 'echelle');
+
+        document.getElementById('out-s3-turns').textContent = `${state.turns} ${state.turns > 1 ? 'tours' : 'tour'}`;
+        document.getElementById('out-s3-ddepth').textContent = `${state.dropDepth} %`;
+        document.getElementById('out-s3-ddens').textContent = `Niveau ${state.dropDens}`;
+        document.getElementById('out-s3-ldepth').textContent = `${state.ladDepth} %`;
+        document.getElementById('out-s3-lspace').textContent = `Niveau ${state.ladSpace}`;
+        document.getElementById('out-s3-grind').textContent = `${state.grind} %`;
+
+        const nomMotif = state.pattern === 'torsade' ? 'Torsade' : (state.pattern === 'goutte' ? "Goutte d'eau" : 'Échelle');
+        document.getElementById('s3-pattern-badge').textContent = `${nomMotif} · ${totalLayers} couches`;
+
+        const cap = document.getElementById('s3-caption');
+        if (state.pattern === 'torsade') {
+          cap.textContent = "Torsade : en descendant au cœur du barreau par meulage, les couches enroulées s'ouvrent en étoiles successives.";
+        } else if (state.pattern === 'goutte') {
+          cap.textContent = "Goutte d'eau : les perçages puis le forgeage à plat font remonter les couches profondes en cercles concentriques.";
+        } else {
+          cap.textContent = "Échelle : des rainures transversales parallèles créent un rythme de vagues régulières sur toute la longueur de la lame.";
+        }
+
+        if (state.step === 3) renderBladeCanvas();
+      }
+
+      /* =======================================================================
+         6. NAVIGATION & ÉCOUTEURS D'ÉVÉNEMENTS
+         ======================================================================= */
+      function goToStep(num) {
+        state.step = num;
+        document.querySelectorAll('.step-tab').forEach(btn => {
+          const active = parseInt(btn.dataset.step, 10) === num;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-selected', active);
+        });
+        document.querySelectorAll('.step-panel').forEach(p => {
+          p.classList.toggle('active', p.id === `step-${num}`);
+        });
+        updateAll();
+      }
+
+      document.querySelectorAll('.step-tab').forEach(b => {
+        b.addEventListener('click', () => goToStep(parseInt(b.dataset.step, 10)));
+      });
+      document.querySelectorAll('[data-goto]').forEach(b => {
+        b.addEventListener('click', () => {
+          goToStep(parseInt(b.dataset.goto, 10));
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      // Étape 1 : ajout / retrait / préréglages
+      document.getElementById('btn-add-carbon').addEventListener('click', () => {
+        if (state.layers.length >= 20) { showToast('Maximum 20 couches atteint'); return; }
+        state.layers.push(0);
+        document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+        updateAll();
+      });
+
+      document.getElementById('btn-add-nickel').addEventListener('click', () => {
+        if (state.layers.length >= 20) { showToast('Maximum 20 couches atteint'); return; }
+        state.layers.push(1);
+        document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+        updateAll();
+      });
+
+      document.getElementById('btn-pop').addEventListener('click', () => {
+        if (state.layers.length <= 2) { showToast('Minimum 2 couches requises'); return; }
+        state.layers.pop();
+        document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+        updateAll();
+      });
+
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        state.layers = [0, 1, 0, 1];
+        document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+        updateAll();
+        showToast('Trousse réinitialisée');
+      });
+
+      document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = PRESETS[btn.dataset.preset];
+          if (!p) return;
+          state.layers = p.slice();
+          document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          updateAll();
+        });
+      });
+
+      // Étape 2 : étirage & replis
+      document.getElementById('s2-stretch').addEventListener('input', e => {
+        state.stretch = parseFloat(e.target.value);
+        updateAll();
+      });
+      document.querySelectorAll('[data-fold]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.folds = parseInt(btn.dataset.fold, 10);
+          document.querySelectorAll('[data-fold]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          updateAll();
+        });
+      });
+      document.getElementById('s2-pass2').addEventListener('change', e => {
+        state.pass2 = e.target.checked;
+        updateAll();
+      });
+
+      // Étape 3 : motifs & curseurs
+      document.querySelectorAll('[data-pattern]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.pattern = btn.dataset.pattern;
+          document.querySelectorAll('[data-pattern]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          updateAll();
+        });
+      });
+
+      const bindings = [
+        ['s3-turns', 'turns'],
+        ['s3-drop-depth', 'dropDepth'],
+        ['s3-drop-dens', 'dropDens'],
+        ['s3-lad-depth', 'ladDepth'],
+        ['s3-lad-space', 'ladSpace'],
+        ['s3-grind', 'grind']
+      ];
+      bindings.forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', e => {
+          state[key] = parseFloat(e.target.value);
+          updateAll();
+        });
+      });
+
+      // Boutons tactiles − et + pour tous les curseurs
+      document.querySelectorAll('.step-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = document.getElementById(btn.dataset.target);
+          if (!input) return;
+          const step = parseFloat(input.step) || 1;
+          const min = parseFloat(input.min);
+          const max = parseFloat(input.max);
+          const dir = parseFloat(btn.dataset.dir);
+          const next = Math.min(max, Math.max(min, parseFloat(input.value) + dir * step));
+          input.value = Number(next.toFixed(2));
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+      });
+
+      // Initialisation
+      updateAll();
+    })();
+  </script>
+</body>
+</html>

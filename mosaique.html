@@ -1,0 +1,3596 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATELIER DAMAS — Module Mosaïque | par Samuel Grosset</title>
+
+  <!-- Polices éditoriale, interface et mesures (avec repli système hors ligne) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       DIRECTION ARTISTIQUE — ARCHITECTE D'ATELIER DU LUXE
+       Fond vert minéral profond (#09120f / #0d1915), cartes bleu pétrole /
+       ardoise sombre (#11211c / #152823), filets et cotes en laiton brossé
+       (#c8a464 / #dec082), texte ivoire (#f0ece1) et gris sauge (#9bb0a7)
+       ========================================================================== */
+    :root {
+      --bg-deep: #09120f;
+      --bg-mineral: #0d1915;
+      --bg-card: #11211c;
+      --bg-elevated: #152823;
+      --bg-petrol: #193435;
+      --bg-input: #0a1411;
+
+      --brass: #c8a464;
+      --brass-light: #dec082;
+      --brass-dim: rgba(200, 164, 100, 0.28);
+      --brass-faint: rgba(200, 164, 100, 0.12);
+      --brass-glow: rgba(200, 164, 100, 0.07);
+
+      --text-ivory: #f0ece1;
+      --text-sage: #9bb0a7;
+      --text-muted: #687f76;
+
+      --ok: #68be96;
+      --ok-bg: rgba(104, 190, 150, 0.13);
+      --ok-border: rgba(104, 190, 150, 0.36);
+
+      --warn: #d8a657;
+      --warn-bg: rgba(216, 166, 87, 0.13);
+      --warn-border: rgba(216, 166, 87, 0.38);
+
+      --bad: #d46d78;
+      --bad-bg: rgba(212, 109, 120, 0.13);
+      --bad-border: rgba(212, 109, 120, 0.38);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-card: 0 14px 36px rgba(0, 0, 0, 0.44);
+
+      --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(ellipse 80% 45% at 50% -10%, rgba(25, 52, 53, 0.56), transparent),
+        radial-gradient(ellipse 60% 45% at 95% 100%, rgba(200, 164, 100, 0.06), transparent);
+      color: var(--text-ivory);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       CONTENEUR & EN-TÊTE ÉDITORIAL
+       ========================================================================== */
+    .shell {
+      width: 100%;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px 14px 68px;
+    }
+
+    @media (min-width: 768px) {
+      .shell {
+        padding: 24px 28px 76px;
+      }
+    }
+
+    .masthead {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--brass-dim);
+    }
+
+    @media (min-width: 980px) {
+      .masthead {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-emblem {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(145deg, var(--bg-petrol), var(--bg-mineral));
+      border: 1px solid var(--brass-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(222, 192, 130, 0.16);
+    }
+
+    .brand-title {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      color: var(--text-ivory);
+      line-height: 1.08;
+      text-transform: uppercase;
+    }
+
+    .brand-signature {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.02rem;
+      letter-spacing: 0.04em;
+      color: var(--brass-light);
+      margin-top: 2px;
+    }
+
+    /* Bandeau permanent de suivi matière (4 indicateurs compacts) */
+    .telemetry-bar {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--brass-dim);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+    }
+
+    @media (min-width: 640px) {
+      .telemetry-bar {
+        grid-template-columns: repeat(4, auto);
+        gap: 20px;
+        align-items: center;
+      }
+    }
+
+    .tele-item {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .tele-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-sage);
+    }
+
+    .tele-value {
+      font-family: var(--font-mono);
+      font-size: 0.93rem;
+      font-weight: 600;
+      color: var(--text-ivory);
+      white-space: nowrap;
+    }
+
+    .tele-value.brass { color: var(--brass-light); }
+    .tele-value.ok { color: var(--ok); }
+
+    /* ==========================================================================
+       MENU DE NAVIGATION DES 7 CHAPITRES
+       ========================================================================== */
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 680px) {
+      .stepper {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (min-width: 1180px) {
+      .stepper {
+        grid-template-columns: repeat(7, 1fr);
+      }
+    }
+
+    .step-tab {
+      appearance: none;
+      background: var(--bg-card);
+      border: 1px solid rgba(200, 164, 100, 0.2);
+      border-radius: var(--radius-md);
+      padding: 9px 10px;
+      color: var(--text-sage);
+      font-family: var(--font-sans);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      transition: all 0.18s ease;
+      min-height: 54px;
+    }
+
+    .step-tab:hover {
+      border-color: var(--brass);
+      color: var(--text-ivory);
+      background: var(--bg-elevated);
+    }
+
+    .step-tab.active {
+      background: linear-gradient(145deg, var(--bg-petrol), var(--bg-elevated));
+      border-color: var(--brass);
+      color: var(--text-ivory);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.34);
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--brass-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--brass);
+      flex-shrink: 0;
+    }
+
+    .step-tab.active .step-num {
+      background: var(--brass);
+      color: var(--bg-deep);
+      border-color: var(--brass);
+    }
+
+    .step-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .step-name {
+      font-size: 0.76rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .step-sub {
+      font-size: 0.66rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ==========================================================================
+       PANNEAUX DE CHAPITRES & CARTES ARCHITECTURALES
+       ========================================================================== */
+    .chapter-panel {
+      display: none;
+      animation: fadePanel 0.2s ease;
+    }
+
+    .chapter-panel.active {
+      display: block;
+    }
+
+    @keyframes fadePanel {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (min-width: 980px) {
+      .workspace {
+        grid-template-columns: 400px 1fr;
+        gap: 22px;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--brass-dim);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-card);
+    }
+
+    @media (min-width: 640px) {
+      .card {
+        padding: 20px;
+      }
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(200, 164, 100, 0.14);
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 1.26rem;
+      font-weight: 600;
+      color: var(--text-ivory);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .card-title svg {
+      color: var(--brass);
+      flex-shrink: 0;
+    }
+
+    /* Badges propres : CHAPITRE 1 à CHAPITRE 7 (jamais de "· MM") */
+    .chapter-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--brass-light);
+      background: var(--brass-faint);
+      border: 1px solid var(--brass-dim);
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       CHAPITRE 1 : GRILLE DE 10 MOTIFS & RÉPÉTITIONS
+       ========================================================================== */
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+    }
+
+    @media (min-width: 640px) {
+      .presets-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .preset-card {
+      appearance: none;
+      background: var(--bg-input);
+      border: 1px solid rgba(200, 164, 100, 0.2);
+      border-radius: var(--radius-md);
+      padding: 10px 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      transition: all 0.18s ease;
+    }
+
+    .preset-card:hover {
+      border-color: var(--brass);
+      transform: translateY(-2px);
+      background: var(--bg-elevated);
+    }
+
+    .preset-card.active {
+      border-color: var(--brass-light);
+      background: linear-gradient(180deg, rgba(25, 52, 53, 0.9), var(--bg-elevated));
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.36);
+    }
+
+    .preset-card canvas {
+      width: 76px;
+      height: 76px;
+      border-radius: 6px;
+      border: 1px solid var(--brass-dim);
+      display: block;
+    }
+
+    .preset-name {
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: var(--text-ivory);
+      line-height: 1.2;
+    }
+
+    .preset-card.active .preset-name {
+      color: var(--brass-light);
+    }
+
+    .preset-desc {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      line-height: 1.25;
+    }
+
+    .rep-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    @media (min-width: 860px) {
+      .rep-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .target-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    @media (min-width: 860px) {
+      .target-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .rep-summary-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--brass-light);
+      background: var(--brass-faint);
+      border: 1px solid var(--brass-dim);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .target-callout {
+      margin-top: 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--brass-dim);
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.79rem;
+      color: var(--text-sage);
+    }
+
+    .target-callout strong {
+      font-family: var(--font-mono);
+      color: var(--brass-light);
+    }
+
+    /* ==========================================================================
+       CONTRÔLES, CURSEURS TACTILES & BOUTONS
+       ========================================================================== */
+    .controls-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .ctrl-box {
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200, 164, 100, 0.16);
+      border-radius: var(--radius-md);
+      padding: 11px 13px;
+      transition: border-color 0.2s ease;
+    }
+
+    .ctrl-box:focus-within {
+      border-color: var(--brass);
+    }
+
+    .ctrl-box.highlight {
+      border-color: rgba(200, 164, 100, 0.48);
+      background: linear-gradient(180deg, rgba(200, 164, 100, 0.09), var(--bg-elevated));
+    }
+
+    .ctrl-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .ctrl-label {
+      font-size: 0.81rem;
+      font-weight: 500;
+      color: var(--text-ivory);
+    }
+
+    .ctrl-val {
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--brass-light);
+      background: var(--bg-input);
+      border: 1px solid var(--brass-dim);
+      padding: 2px 8px;
+      border-radius: 5px;
+      white-space: nowrap;
+    }
+
+    .ctrl-hint {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .ctrl-explain {
+      font-size: 0.73rem;
+      color: var(--text-sage);
+      margin-top: 6px;
+      line-height: 1.38;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      border: 1px solid var(--brass-dim);
+      background: var(--bg-input);
+      color: var(--brass-light);
+      font-size: 1.05rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.14s ease;
+    }
+
+    .step-btn:hover {
+      border-color: var(--brass);
+      background: var(--brass-faint);
+    }
+
+    .step-btn:active {
+      transform: scale(0.93);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #233b35;
+      border-radius: 999px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: var(--brass-light);
+      border: 2px solid var(--bg-deep);
+      box-shadow: 0 0 0 2px rgba(200, 164, 100, 0.35);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: var(--brass-light);
+      border: 2px solid var(--bg-deep);
+      box-shadow: 0 0 0 2px rgba(200, 164, 100, 0.35);
+      cursor: pointer;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .btn {
+      appearance: none;
+      background: var(--bg-input);
+      border: 1px solid var(--brass-dim);
+      color: var(--text-sage);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      border-color: var(--brass);
+      color: var(--text-ivory);
+      background: var(--brass-glow);
+    }
+
+    .btn.active {
+      background: var(--bg-petrol);
+      border-color: var(--brass);
+      color: var(--brass-light);
+      font-weight: 600;
+    }
+
+    .btn.brass {
+      background: linear-gradient(135deg, var(--brass), #a9884c);
+      border-color: var(--brass-light);
+      color: var(--bg-deep);
+      font-weight: 600;
+    }
+
+    .btn.brass:hover {
+      filter: brightness(1.08);
+    }
+
+    .seg-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .seg-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .seg-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+
+    .check-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.79rem;
+      color: var(--text-sage);
+      user-select: none;
+    }
+
+    .check-row input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--brass);
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       ÉDITEUR INTERACTIF DE COUCHES & SCHÉMAS COTÉS
+       ========================================================================== */
+    .grid-2-equal {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 680px) {
+      .grid-2-equal { grid-template-columns: 1fr 1fr; }
+    }
+
+    .grid-3-equal {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 720px) {
+      .grid-3-equal { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .stack-stage {
+      background: var(--bg-input);
+      border: 1px solid rgba(200, 164, 100, 0.18);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stack-pile {
+      width: 100%;
+      max-width: 310px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--brass-dim);
+      border-radius: 5px;
+      overflow: hidden;
+      background: #060f0c;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    }
+
+    .stack-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      user-select: none;
+      transition: filter 0.14s ease;
+    }
+
+    .stack-row:last-child { border-bottom: none; }
+    .stack-row:hover { filter: brightness(1.16); }
+
+    .stack-row.xc75 {
+      background: linear-gradient(90deg, #171a19 0%, #232826 50%, #171a19 100%);
+      color: #b4c2bd;
+    }
+
+    .stack-row.n15n20 {
+      background: linear-gradient(90deg, #c6d0ce 0%, #e4e8e6 50%, #c6d0ce 100%);
+      color: #09120f;
+      font-weight: 600;
+    }
+
+    .canvas-card {
+      background: var(--bg-input);
+      border: 1px solid rgba(200, 164, 100, 0.18);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .canvas-title {
+      font-family: var(--font-serif);
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--brass-light);
+      text-align: center;
+    }
+
+    .canvas-holder {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas-holder canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+
+    .canvas-len-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--brass-light);
+      background: var(--brass-faint);
+      border: 1px solid var(--brass-dim);
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+
+    .canvas-note {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .kpi-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    @media (min-width: 600px) {
+      .kpi-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .kpi-tile {
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200, 164, 100, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .kpi-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-ivory);
+      margin-top: 3px;
+    }
+
+    .kpi-val.brass { color: var(--brass-light); }
+
+    .specs-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .spec-chip {
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200, 164, 100, 0.18);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 0.74rem;
+      color: var(--text-sage);
+    }
+
+    .spec-chip strong {
+      font-family: var(--font-mono);
+      color: var(--text-ivory);
+    }
+
+    /* Balance chromatique Carbone / Nickel */
+    .chroma-box {
+      margin-top: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200, 164, 100, 0.18);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+    }
+
+    .chroma-head {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-ivory);
+      margin-bottom: 6px;
+    }
+
+    .chroma-track {
+      width: 100%;
+      height: 9px;
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      border: 1px solid var(--brass-dim);
+      background: var(--bg-input);
+    }
+
+    .chroma-dark { background: #171a19; height: 100%; transition: width 0.2s ease; }
+    .chroma-light { background: #e4e8e6; height: 100%; transition: width 0.2s ease; }
+
+    /* ==========================================================================
+       CHAPITRE 7 — COUPE EN BIAIS, HERO, BADGE 1:1 & BILAN MATIÈRE
+       ========================================================================== */
+    .cut-hero {
+      background: linear-gradient(135deg, var(--bg-petrol), var(--bg-card) 70%);
+      border: 1px solid var(--brass);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 760px) {
+      .cut-hero {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .cut-kicker {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      color: var(--brass);
+      font-weight: 600;
+    }
+
+    .cut-big {
+      font-family: var(--font-serif);
+      font-size: 2.15rem;
+      font-weight: 700;
+      color: var(--text-ivory);
+      line-height: 1.08;
+      margin-top: 2px;
+    }
+
+    .cut-sub {
+      font-size: 0.81rem;
+      color: var(--text-sage);
+      margin-top: 3px;
+    }
+
+    .ratio-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.77rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .ratio-pill.ok { background: var(--ok-bg); border: 1px solid var(--ok-border); color: var(--ok); }
+    .ratio-pill.warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn); }
+    .ratio-pill.bad { background: var(--bad-bg); border: 1px solid var(--bad-border); color: var(--bad); }
+
+    .ratio-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .svg-frame {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid rgba(200, 164, 100, 0.18);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .svg-frame svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .alert-strip {
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      margin-bottom: 14px;
+      border: 1px solid var(--warn-border);
+      background: var(--warn-bg);
+      color: #f0cf91;
+    }
+
+    .alert-strip.bad {
+      border-color: var(--bad-border);
+      background: var(--bad-bg);
+      color: #f3aeb5;
+    }
+
+    .loss-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .loss-table th, .loss-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(200, 164, 100, 0.14);
+      text-align: left;
+    }
+
+    .loss-table th {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .loss-table td.num {
+      font-family: var(--font-mono);
+      text-align: right;
+      color: var(--text-ivory);
+    }
+
+    .loss-table tr.total td {
+      border-top: 1px solid var(--brass-dim);
+      border-bottom: none;
+      color: var(--brass-light);
+      font-weight: 600;
+    }
+
+    /* Navigation bas de chapitre */
+    .chapter-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(200, 164, 100, 0.16);
+    }
+
+    .hidden { display: none !important; }
+
+    /* Toast discret */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(72px);
+      background: var(--bg-petrol);
+      border: 1px solid var(--brass);
+      color: var(--text-ivory);
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- ======================================================================
+         EN-TÊTE ÉDITORIAL & BANDEAU DE SUIVI MATIÈRE PERMANENT
+         ====================================================================== -->
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-emblem" aria-hidden="true">
+          <!-- Monogramme géométrique fin en laiton brossé (aucune flamme) -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c8a464" stroke-width="1.35">
+            <rect x="3" y="3" width="18" height="18" rx="1.5" stroke-opacity="0.65" />
+            <polygon points="12,4.5 14.2,9.8 19.5,12 14.2,14.2 12,19.5 9.8,14.2 4.5,12 9.8,9.8" fill="rgba(200,164,100,0.16)" />
+            <circle cx="12" cy="12" r="1.4" fill="#dec082" stroke="none" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">ATELIER DAMAS — Module Mosaïque</h1>
+          <p class="brand-signature">par Samuel Grosset</p>
+        </div>
+      </div>
+
+      <div class="telemetry-bar" aria-label="Suivi matière continu">
+        <div class="tele-item">
+          <span class="tele-label">Masse initiale</span>
+          <span class="tele-value" id="tele-m0">973 g</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">Masse utile restante</span>
+          <span class="tele-value ok" id="tele-mfinal">468 g</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label" id="tele-len-lbl">Longueur résiduelle (Ch. 1)</span>
+          <span class="tele-value brass" id="tele-len">220 mm</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">Pertes cumulées</span>
+          <span class="tele-value" id="tele-loss">−51,9 %</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         MENU DE NAVIGATION DES 7 CHAPITRES (SEUL LE CHAPITRE ACTIF S'AFFICHE)
+         ====================================================================== -->
+    <nav class="stepper" role="tablist" aria-label="Navigation des 7 chapitres">
+      <button class="step-tab active" data-chapter="1" role="tab" aria-selected="true" type="button">
+        <span class="step-num">1</span>
+        <span class="step-info">
+          <span class="step-name">Catalogue</span>
+          <span class="step-sub">10 motifs &amp; objectif brut</span>
+        </span>
+      </button>
+      <button class="step-tab" data-chapter="2" role="tab" aria-selected="false" type="button">
+        <span class="step-num">2</span>
+        <span class="step-info">
+          <span class="step-name">Empilage initial</span>
+          <span class="step-sub">Trousse XC75 / 15N20</span>
+        </span>
+      </button>
+      <button class="step-tab" data-chapter="3" role="tab" aria-selected="false" type="button">
+        <span class="step-num">3</span>
+        <span class="step-info">
+          <span class="step-name">Mise en Ω</span>
+          <span class="step-sub">Octogone 45° &amp; chant</span>
+        </span>
+      </button>
+      <button class="step-tab" data-chapter="4" role="tab" aria-selected="false" type="button">
+        <span class="step-num">4</span>
+        <span class="step-info">
+          <span class="step-name">Barreau Ω × N</span>
+          <span class="step-sub">Assemblage &amp; carré</span>
+        </span>
+      </button>
+      <button class="step-tab" data-chapter="5" role="tab" aria-selected="false" type="button">
+        <span class="step-num">5</span>
+        <span class="step-info">
+          <span class="step-name">Diagonale 45°</span>
+          <span class="step-sub">Cassage d'angles</span>
+        </span>
+      </button>
+      <button class="step-tab" data-chapter="6" role="tab" aria-selected="false" type="button">
+        <span class="step-num">6</span>
+        <span class="step-info">
+          <span class="step-name">Assemblage 4 quartiers</span>
+          <span class="step-sub">Orientation &amp; ×N</span>
+        </span>
+      </button>
+      <button class="step-tab" data-chapter="7" role="tab" aria-selected="false" type="button">
+        <span class="step-num">7</span>
+        <span class="step-info">
+          <span class="step-name">Coupe en biais</span>
+          <span class="step-sub">Rotation 30°–40° · 1:1</span>
+        </span>
+      </button>
+    </nav>
+
+    <!-- ======================================================================
+         CHAPITRE 1 — CATALOGUE DE 10 MOTIFS & OBJECTIF BRUT (AFFICHE PAR DÉFAUT)
+         ====================================================================== -->
+    <section id="chapter-1" class="chapter-panel active">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            Catalogue de 10 motifs &amp; Objectif brut avant trempe
+          </h2>
+          <span class="chapter-badge">CHAPITRE 1</span>
+        </div>
+
+        <!-- 1. Grille de 10 motifs standards générés en temps réel -->
+        <div class="presets-grid" id="presets-grid">
+          <button class="preset-card active" data-preset="coeur_sombre" type="button">
+            <canvas id="thumb-coeur_sombre" width="80" height="80"></canvas>
+            <span class="preset-name">Étoile Cœur Sombre</span>
+            <span class="preset-desc">Cœur XC75 dense, halo 15N20</span>
+          </button>
+          <button class="preset-card" data-preset="bord_sombre" type="button">
+            <canvas id="thumb-bord_sombre" width="80" height="80"></canvas>
+            <span class="preset-name">Étoile Bord Sombre</span>
+            <span class="preset-desc">Rayons sombres, centre clair</span>
+          </button>
+          <button class="preset-card" data-preset="etoile_claire" type="button">
+            <canvas id="thumb-etoile_claire" width="80" height="80"></canvas>
+            <span class="preset-name">Étoile Claire</span>
+            <span class="preset-desc">Dominante 15N20, fines nervures</span>
+          </button>
+          <button class="preset-card" data-preset="contrastee" type="button">
+            <canvas id="thumb-contrastee" width="80" height="80"></canvas>
+            <span class="preset-name">Étoile Contrastée</span>
+            <span class="preset-desc">Alternance équilibrée franche</span>
+          </button>
+          <button class="preset-card" data-preset="boule_feu" type="button">
+            <canvas id="thumb-boule_feu" width="80" height="80"></canvas>
+            <span class="preset-name">Boule de Feu</span>
+            <span class="preset-desc">Symétrie miroir flamboyante</span>
+          </button>
+          <button class="preset-card" data-preset="moulin" type="button">
+            <canvas id="thumb-moulin" width="80" height="80"></canvas>
+            <span class="preset-name">Moulin à Vent</span>
+            <span class="preset-desc">Assemblage rotatif à 90°</span>
+          </button>
+          <button class="preset-card" data-preset="natte" type="button">
+            <canvas id="thumb-natte" width="80" height="80"></canvas>
+            <span class="preset-name">Natté Classique</span>
+            <span class="preset-desc">Damier 0°/90°, sans diagonale</span>
+          </button>
+          <button class="preset-card" data-preset="losange" type="button">
+            <canvas id="thumb-losange" width="80" height="80"></canvas>
+            <span class="preset-name">Losange Diamant</span>
+            <span class="preset-desc">Cœur géométrique en losange</span>
+          </button>
+          <button class="preset-card" data-preset="croix" type="button">
+            <canvas id="thumb-croix" width="80" height="80"></canvas>
+            <span class="preset-name">Croix Architecturale</span>
+            <span class="preset-desc">Axes sombres orthogonaux</span>
+          </button>
+          <button class="preset-card" data-preset="ecaille" type="button">
+            <canvas id="thumb-ecaille" width="80" height="80"></canvas>
+            <span class="preset-name">Damier Écaille</span>
+            <span class="preset-desc">Vagues Ω en quinconce</span>
+          </button>
+        </div>
+
+        <!-- 2. Deux réglages de répétition bien distincts -->
+        <div class="rep-grid">
+          <div class="ctrl-box">
+            <div class="ctrl-top" style="margin-bottom: 8px;">
+              <span class="ctrl-label">Multiplication dans le barreau (section)</span>
+              <span class="ctrl-val" id="out-cat-mult">1×1</span>
+            </div>
+            <div class="seg-5">
+              <button class="btn active" type="button" data-mult="1">1×1</button>
+              <button class="btn" type="button" data-mult="2">2×2</button>
+              <button class="btn" type="button" data-mult="3">3×3</button>
+              <button class="btn" type="button" data-mult="4">4×4</button>
+              <button class="btn" type="button" data-mult="6">6×6</button>
+            </div>
+            <p class="ctrl-explain">
+              <strong>1×1</strong> = un motif sur toute la hauteur ; <strong>2×2 à 6×6</strong> = motif multiplié dans la section avant coupe.
+            </p>
+          </div>
+
+          <div class="ctrl-box highlight">
+            <div class="ctrl-top">
+              <label class="ctrl-label" for="cat-reps">Répétitions sur la longueur du brut (tuiles assemblées)</label>
+              <span class="ctrl-val" id="out-cat-reps">5 tuiles</span>
+            </div>
+            <div class="seg-7" style="margin-bottom: 8px;">
+              <button class="btn" type="button" data-reps="2">2</button>
+              <button class="btn" type="button" data-reps="3">3</button>
+              <button class="btn" type="button" data-reps="4">4</button>
+              <button class="btn active" type="button" data-reps="5">5</button>
+              <button class="btn" type="button" data-reps="6">6</button>
+              <button class="btn" type="button" data-reps="7">7</button>
+              <button class="btn" type="button" data-reps="8">8</button>
+            </div>
+            <div class="slider-row">
+              <button class="step-btn" type="button" data-target="cat-reps" data-dir="-1">−</button>
+              <input id="cat-reps" type="range" min="2" max="8" step="1" value="5" />
+              <button class="step-btn" type="button" data-target="cat-reps" data-dir="1">+</button>
+            </div>
+            <div class="rep-summary-tag" id="rep-summary-tag">5 motifs pleine hauteur (1 × 5)</div>
+          </div>
+        </div>
+
+        <!-- 3. Dimensions du brut avant trempe souhaitées -->
+        <div class="target-grid">
+          <div class="ctrl-box">
+            <div class="ctrl-top">
+              <label class="ctrl-label" for="tgt-l">Longueur brute souhaitée</label>
+              <span class="ctrl-val" id="out-tgt-l">220 mm</span>
+            </div>
+            <div class="slider-row">
+              <button class="step-btn" type="button" data-target="tgt-l" data-dir="-1">−</button>
+              <input id="tgt-l" type="range" min="120" max="350" step="10" value="220" />
+              <button class="step-btn" type="button" data-target="tgt-l" data-dir="1">+</button>
+            </div>
+          </div>
+
+          <div class="ctrl-box">
+            <div class="ctrl-top">
+              <label class="ctrl-label" for="tgt-h">Hauteur brute souhaitée</label>
+              <span class="ctrl-val" id="out-tgt-h">45 mm</span>
+            </div>
+            <div class="slider-row">
+              <button class="step-btn" type="button" data-target="tgt-h" data-dir="-1">−</button>
+              <input id="tgt-h" type="range" min="25" max="65" step="1" value="45" />
+              <button class="step-btn" type="button" data-target="tgt-h" data-dir="1">+</button>
+            </div>
+          </div>
+
+          <div class="ctrl-box">
+            <div class="ctrl-top">
+              <label class="ctrl-label" for="tgt-e">Épaisseur brute avant trempe</label>
+              <span class="ctrl-val" id="out-tgt-e">7,0 mm</span>
+            </div>
+            <div class="slider-row">
+              <button class="step-btn" type="button" data-target="tgt-e" data-dir="-1">−</button>
+              <input id="tgt-e" type="range" min="5.0" max="10.0" step="0.5" value="7.0" />
+              <button class="step-btn" type="button" data-target="tgt-e" data-dir="1">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="target-callout">
+          <span>
+            Épaisseur <strong>H cible à forger avant coupe à <span id="cat-theta-lbl">30</span>°</strong> : <strong id="cat-h-val">12,8 mm</strong>
+            · largeur avant coupe <strong id="cat-w-val">39,1 mm</strong> · ratio motif <strong id="cat-rat-val">1,00 : 1,00</strong>.
+          </span>
+          <span id="cat-tiles-fit" style="color: var(--text-muted);">Barreau actuel : 5 tuiles débitables.</span>
+        </div>
+
+        <!-- 4. Aperçu direct du brut de lame final -->
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(200, 164, 100, 0.16);">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <h3 style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--brass-light);">Aperçu direct du brut de lame final</h3>
+              <span class="chapter-badge" id="cat-blade-dims">225 × 45,0 × 7,0 mm</span>
+            </div>
+            <label class="check-row">
+              <input id="cat-show-seams" type="checkbox" checked />
+              <span>Afficher les lignes de jonction des tuiles</span>
+            </label>
+          </div>
+
+          <div class="canvas-card" style="padding: 12px;">
+            <div class="canvas-holder">
+              <canvas id="cv-cat-blade" width="840" height="220"></canvas>
+            </div>
+          </div>
+
+          <div class="chroma-box">
+            <div class="chroma-head">
+              <span id="cat-chroma-xc">Carbone (Noir XC75) : 64 %</span>
+              <span id="cat-chroma-15">Nickel (Argent 15N20) : 36 %</span>
+            </div>
+            <div class="chroma-track">
+              <div id="cat-bar-xc" class="chroma-dark" style="width: 64%;"></div>
+              <div id="cat-bar-15" class="chroma-light" style="width: 36%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-footer">
+        <span style="font-size: 0.78rem; color: var(--text-muted);">Chapitre 1 sur 7 — Catalogue &amp; Objectif brut</span>
+        <button class="btn brass" data-goto="2" type="button">Chapitre suivant : Empilage initial →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         CHAPITRE 2 — EMPILAGE INITIAL (TROUSSE XC75 / 15N20)
+         ====================================================================== -->
+    <section id="chapter-2" class="chapter-panel">
+      <div class="workspace">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 12 12 17 22 12" />
+                <polyline points="2 17 12 22 22 17" />
+              </svg>
+              Empilage initial
+            </h2>
+            <span class="chapter-badge">CHAPITRE 2</span>
+          </div>
+
+          <div class="controls-stack">
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c2-w">Largeur trousse — Dim X</label>
+                <span class="ctrl-val" id="out-c2-w">40 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c2-w" data-dir="-1">−</button>
+                <input id="c2-w" type="range" min="20" max="60" step="1" value="40" />
+                <button class="step-btn" type="button" data-target="c2-w" data-dir="1">+</button>
+              </div>
+              <div class="ctrl-hint"><span>20 mm</span><span>Largeur des plats d'acier</span><span>60 mm</span></div>
+            </div>
+
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c2-l">Longueur de trousse (L)</label>
+                <span class="ctrl-val" id="out-c2-l">100 mm</span>
+              </div>
+              <div class="btn-row" style="margin-bottom: 8px;">
+                <button class="btn" type="button" data-c2len="50">50 mm</button>
+                <button class="btn active" type="button" data-c2len="100">100 mm</button>
+                <button class="btn" type="button" data-c2len="140">140 mm</button>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c2-l" data-dir="-1">−</button>
+                <input id="c2-l" type="range" min="50" max="150" step="5" value="100" />
+                <button class="step-btn" type="button" data-target="c2-l" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c2-exc">Épaisseur XC75 (Carbone sombre)</label>
+                <span class="ctrl-val" id="out-c2-exc">3,0 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c2-exc" data-dir="-1">−</button>
+                <input id="c2-exc" type="range" min="1.5" max="5.0" step="0.5" value="3.0" />
+                <button class="step-btn" type="button" data-target="c2-exc" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c2-e15">Épaisseur 15N20 (Nickel clair)</label>
+                <span class="ctrl-val" id="out-c2-e15">2,0 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c2-e15" data-dir="-1">−</button>
+                <input id="c2-e15" type="range" min="1.0" max="4.0" step="0.5" value="2.0" />
+                <button class="step-btn" type="button" data-target="c2-e15" data-dir="1">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Constructeur interactif de couches &amp; coupe initiale</h2>
+            <div class="btn-row">
+              <button class="btn" id="btn-add-xc" type="button">+ XC75</button>
+              <button class="btn" id="btn-add-15" type="button">+ 15N20</button>
+              <button class="btn" id="btn-pop" type="button">Supprimer dernière</button>
+              <button class="btn" id="btn-invert" type="button">Inverser</button>
+            </div>
+          </div>
+
+          <div class="grid-2-equal">
+            <div class="stack-stage">
+              <div class="canvas-title">Empilage (Haut → Bas)</div>
+              <div id="stack-pile" class="stack-pile" role="list" aria-label="Empilage des couches"></div>
+              <p class="canvas-note">Cliquez sur une couche pour basculer XC75 ↔ 15N20. Le bas forme le fond du fluage Ω.</p>
+            </div>
+
+            <div class="canvas-card">
+              <div class="canvas-title">Coupe initiale cotée</div>
+              <div class="canvas-holder">
+                <canvas id="cv-c2" width="300" height="285"></canvas>
+              </div>
+              <span class="canvas-len-tag" id="c2-len-tag">Longueur L = 100 mm</span>
+            </div>
+          </div>
+
+          <div class="kpi-grid-4">
+            <div class="kpi-tile">
+              <div class="kpi-lbl">Section initiale</div>
+              <div class="kpi-val brass" id="c2-kpi-sec">40 × 31,0 mm</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-lbl">Couches</div>
+              <div class="kpi-val" id="c2-kpi-cnt">12</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-lbl">XC75 / 15N20</div>
+              <div class="kpi-val" id="c2-kpi-rat">68 % / 32 %</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-lbl">Masse &amp; Volume</div>
+              <div class="kpi-val" id="c2-kpi-mass">973 g · 124 cm³</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-footer">
+        <button class="btn" data-goto="1" type="button">← Chapitre précédent</button>
+        <button class="btn brass" data-goto="3" type="button">Chapitre suivant →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         CHAPITRE 3 — MISE EN Ω (OCTOGONE 45° & ÉCRASEMENT SUR CHANT)
+         ====================================================================== -->
+    <section id="chapter-3" class="chapter-panel">
+      <div class="workspace">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <polygon points="7 3 17 3 21 7 21 17 17 21 7 21 3 17 3 7" />
+                <path d="M8 7v7a4 4 0 0 0 8 0V7" />
+              </svg>
+              Mise en Ω (sur chant)
+            </h2>
+            <span class="chapter-badge">CHAPITRE 3</span>
+          </div>
+
+          <div class="controls-stack">
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c3-x">Largeur forgée sur chant — Dim X</label>
+                <span class="ctrl-val" id="out-c3-x">20 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c3-x" data-dir="-1">−</button>
+                <input id="c3-x" type="range" min="10" max="35" step="1" value="20" />
+                <button class="step-btn" type="button" data-target="c3-x" data-dir="1">+</button>
+              </div>
+              <div class="ctrl-hint"><span>10 mm (Fluage fort)</span><span>Pilote la profondeur Ω</span><span>35 mm (Faible)</span></div>
+            </div>
+
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c3-y">Hauteur résultante — Dim Y</label>
+                <span class="ctrl-val" id="out-c3-y">50 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c3-y" data-dir="-1">−</button>
+                <input id="c3-y" type="range" min="30" max="70" step="1" value="50" />
+                <button class="step-btn" type="button" data-target="c3-y" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c3-chamfer">Profondeur de chanfrein (45°)</label>
+                <span class="ctrl-val" id="out-c3-chamfer">8,0 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c3-chamfer" data-dir="-1">−</button>
+                <input id="c3-chamfer" type="range" min="3.0" max="14.0" step="0.5" value="8.0" />
+                <button class="step-btn" type="button" data-target="c3-chamfer" data-dir="1">+</button>
+              </div>
+              <div class="ctrl-hint"><span>3 mm</span><span>Pente d'écrasement sur arêtes</span><span>14 mm</span></div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c3-cal">Perte calamine (soudure &amp; étirage)</label>
+                <span class="ctrl-val" id="out-c3-cal">4 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c3-cal" data-dir="-1">−</button>
+                <input id="c3-cal" type="range" min="0" max="15" step="1" value="4" />
+                <button class="step-btn" type="button" data-target="c3-cal" data-dir="1">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Section à plat → Octogone (45°) → Barreau Ω</h2>
+            <span class="spec-chip">Longueur résiduelle : <strong id="c3-chip-len">119 mm</strong></span>
+          </div>
+
+          <div class="grid-3-equal">
+            <div class="canvas-card">
+              <div class="canvas-title">1. Section soudée à plat</div>
+              <div class="canvas-holder"><canvas id="cv-c3-flat" width="250" height="250"></canvas></div>
+              <span class="canvas-len-tag" id="c3-len-1">L = 100 mm</span>
+              <div class="canvas-note">Section initiale avant cassage d'arêtes</div>
+            </div>
+
+            <div class="canvas-card">
+              <div class="canvas-title">2. Octogone (pente 45°)</div>
+              <div class="canvas-holder"><canvas id="cv-c3-oct" width="250" height="250"></canvas></div>
+              <span class="canvas-len-tag" id="c3-len-2">45° · C = 11,3 mm</span>
+              <div class="canvas-note">Cote oblique de la pente à viser</div>
+            </div>
+
+            <div class="canvas-card">
+              <div class="canvas-title">3. Barreau Ω sur chant</div>
+              <div class="canvas-holder"><canvas id="cv-c3-omega" width="250" height="250"></canvas></div>
+              <span class="canvas-len-tag" id="c3-len-3">L = 119 mm</span>
+              <div class="canvas-note">Œil central &amp; enroulement Ω</div>
+            </div>
+          </div>
+
+          <div class="specs-bar">
+            <span class="spec-chip">Ratio écrasement sur chant : <strong id="c3-chip-ratio">×2,00</strong></span>
+            <span class="spec-chip">Pente oblique : <strong id="c3-chip-chamfer">45° · C = 11,3 mm</strong></span>
+            <span class="spec-chip">Masse restante : <strong id="c3-chip-mass">934 g</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-footer">
+        <button class="btn" data-goto="2" type="button">← Chapitre précédent</button>
+        <button class="btn brass" data-goto="4" type="button">Chapitre suivant →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         CHAPITRE 4 — BARREAU Ω × N (STRICTEMENT 1 SEUL ÉTAGE & MISE AU CARRÉ)
+         ====================================================================== -->
+    <section id="chapter-4" class="chapter-panel">
+      <div class="workspace">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="4" width="4" height="16" />
+                <rect x="10" y="4" width="4" height="16" />
+                <rect x="17" y="4" width="4" height="16" />
+              </svg>
+              Barreau Ω × N (1 étage)
+            </h2>
+            <span class="chapter-badge">CHAPITRE 4</span>
+          </div>
+
+          <div class="controls-stack">
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c4-n">Nombre de barreaux coupés (N)</label>
+                <span class="ctrl-val" id="out-c4-n">4 barreaux</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c4-n" data-dir="-1">−</button>
+                <input id="c4-n" type="range" min="3" max="6" step="1" value="4" />
+                <button class="step-btn" type="button" data-target="c4-n" data-dir="1">+</button>
+              </div>
+              <div class="ctrl-hint"><span>3</span><span>Soudés côte à côte sur 1 seul étage</span><span>6</span></div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c4-x">Largeur forgée — Dim X</label>
+                <span class="ctrl-val" id="out-c4-x">35 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c4-x" data-dir="-1">−</button>
+                <input id="c4-x" type="range" min="20" max="60" step="1" value="35" />
+                <button class="step-btn" type="button" data-target="c4-x" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c4-y">Hauteur forgée — Dim Y</label>
+                <span class="ctrl-val" id="out-c4-y">35 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c4-y" data-dir="-1">−</button>
+                <input id="c4-y" type="range" min="20" max="60" step="1" value="35" />
+                <button class="step-btn" type="button" data-target="c4-y" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c4-cal">Perte calamine (soudure)</label>
+                <span class="ctrl-val" id="out-c4-cal">4 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c4-cal" data-dir="-1">−</button>
+                <input id="c4-cal" type="range" min="0" max="15" step="1" value="4" />
+                <button class="step-btn" type="button" data-target="c4-cal" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c4-abr">Perte abrasion / dressage</label>
+                <span class="ctrl-val" id="out-c4-abr">5 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c4-abr" data-dir="-1">−</button>
+                <input id="c4-abr" type="range" min="0" max="20" step="1" value="5" />
+                <button class="step-btn" type="button" data-target="c4-abr" data-dir="1">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Empilage brut avant soudure → Bloc forgé mis au carré</h2>
+            <span class="spec-chip">Longueur résiduelle : <strong id="c4-chip-len">85 mm</strong></span>
+          </div>
+
+          <div class="grid-2-equal">
+            <div class="canvas-card">
+              <div class="canvas-title">1. Empilage brut (N barreaux Ω)</div>
+              <div class="canvas-holder"><canvas id="cv-c4-before" width="320" height="270"></canvas></div>
+              <span class="canvas-len-tag" id="c4-len-troncon">Longueur par tronçon : L = 29 mm</span>
+              <div class="canvas-note">Joints laiton visibles avant soudure (1 étage)</div>
+            </div>
+
+            <div class="canvas-card">
+              <div class="canvas-title">2. Bloc forgé mis au carré</div>
+              <div class="canvas-holder"><canvas id="cv-c4-after" width="320" height="270"></canvas></div>
+              <span class="canvas-len-tag" id="c4-len-after">Longueur résiduelle : L = 85 mm</span>
+              <div class="canvas-note">Vagues Ω comprimées à la section cible</div>
+            </div>
+          </div>
+
+          <div class="specs-bar">
+            <span class="spec-chip">Section brute empilée : <strong id="c4-chip-raw">80 × 50 mm</strong></span>
+            <span class="spec-chip">Masse restante : <strong id="c4-chip-mass">820 g</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-footer">
+        <button class="btn" data-goto="3" type="button">← Chapitre précédent</button>
+        <button class="btn brass" data-goto="5" type="button">Chapitre suivant →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         CHAPITRE 5 — DIAGONALE 45° (CASSAGE D'ANGLES)
+         ====================================================================== -->
+    <section id="chapter-5" class="chapter-panel">
+      <div class="workspace">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="4" y="4" width="16" height="16" rx="1" />
+                <polygon points="12 2 22 12 12 22 2 12" stroke-dasharray="3 2" opacity="0.7" />
+              </svg>
+              Diagonale 45°
+            </h2>
+            <span class="chapter-badge">CHAPITRE 5</span>
+          </div>
+
+          <div class="controls-stack">
+            <div class="ctrl-box highlight">
+              <label class="check-row" style="width: 100%; justify-content: space-between; color: var(--text-ivory);">
+                <span>Activer le passage sur la diagonale 45°</span>
+                <input id="c5-use-diag" type="checkbox" checked />
+              </label>
+              <p class="ctrl-explain">
+                Activé pour les étoiles, boules de feu et losanges ; désactivable pour le natté, la croix ou le damier.
+              </p>
+            </div>
+
+            <div id="c5-diag-controls" class="controls-stack">
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="c5-x">Largeur carrée reforgée — Dim X</label>
+                  <span class="ctrl-val" id="out-c5-x">28 mm</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="c5-x" data-dir="-1">−</button>
+                  <input id="c5-x" type="range" min="20" max="60" step="1" value="28" />
+                  <button class="step-btn" type="button" data-target="c5-x" data-dir="1">+</button>
+                </div>
+              </div>
+
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="c5-y">Hauteur carrée reforgée — Dim Y</label>
+                  <span class="ctrl-val" id="out-c5-y">28 mm</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="c5-y" data-dir="-1">−</button>
+                  <input id="c5-y" type="range" min="20" max="60" step="1" value="28" />
+                  <button class="step-btn" type="button" data-target="c5-y" data-dir="1">+</button>
+                </div>
+              </div>
+
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="c5-cal">Perte calamine (forgeage)</label>
+                  <span class="ctrl-val" id="out-c5-cal">3 %</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="c5-cal" data-dir="-1">−</button>
+                  <input id="c5-cal" type="range" min="0" max="15" step="1" value="3" />
+                  <button class="step-btn" type="button" data-target="c5-cal" data-dir="1">+</button>
+                </div>
+              </div>
+
+              <div class="ctrl-box">
+                <div class="ctrl-top">
+                  <label class="ctrl-label" for="c5-abr">Perte abrasion / dressage</label>
+                  <span class="ctrl-val" id="out-c5-abr">5 %</span>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" type="button" data-target="c5-abr" data-dir="-1">−</button>
+                  <input id="c5-abr" type="range" min="0" max="20" step="1" value="5" />
+                  <button class="step-btn" type="button" data-target="c5-abr" data-dir="1">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title" id="c5-visual-heading">Bascule en losange 45° → Carré diagonal reforgé</h2>
+            <span class="spec-chip">Longueur résiduelle : <strong id="c5-chip-len">122 mm</strong></span>
+          </div>
+
+          <div class="grid-2-equal">
+            <div class="canvas-card">
+              <div class="canvas-title" id="c5-t1">1. Bascule en losange (45°)</div>
+              <div class="canvas-holder"><canvas id="cv-c5-diamond" width="310" height="300"></canvas></div>
+              <span class="canvas-len-tag" id="c5-diag-tag">Diagonale = 49,5 mm</span>
+              <div class="canvas-note">Avant écrasement des 4 pointes au carré</div>
+            </div>
+
+            <div class="canvas-card">
+              <div class="canvas-title">2. Carré diagonal reforgé</div>
+              <div class="canvas-holder"><canvas id="cv-c5-square" width="310" height="300"></canvas></div>
+              <span class="canvas-len-tag" id="c5-len-tag">Longueur résiduelle : L = 122 mm</span>
+              <div class="canvas-note">Vagues comprimées dans les angles du carré</div>
+            </div>
+          </div>
+
+          <div class="specs-bar">
+            <span class="spec-chip">Masse restante : <strong id="c5-chip-mass">755 g</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-footer">
+        <button class="btn" data-goto="4" type="button">← Chapitre précédent</button>
+        <button class="btn brass" data-goto="6" type="button">Chapitre suivant →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         CHAPITRE 6 — ASSEMBLAGE 4 QUARTIERS (ORIENTATION & MULTIPLICATION ×N)
+         ====================================================================== -->
+    <section id="chapter-6" class="chapter-panel">
+      <div class="workspace">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="3" width="8" height="8" rx="1" />
+                <rect x="13" y="3" width="8" height="8" rx="1" />
+                <rect x="3" y="13" width="8" height="8" rx="1" />
+                <rect x="13" y="13" width="8" height="8" rx="1" />
+              </svg>
+              Assemblage 4 quartiers
+            </h2>
+            <span class="chapter-badge">CHAPITRE 6</span>
+          </div>
+
+          <div class="controls-stack">
+            <div class="ctrl-box">
+              <div class="ctrl-top" style="margin-bottom: 8px;">
+                <span class="ctrl-label">Mode d'assemblage géométrique (6 modes)</span>
+              </div>
+              <div class="btn-row">
+                <button class="btn active" type="button" data-asm="etoile_centre">Étoile centre</button>
+                <button class="btn" type="button" data-asm="etoile_ext">Étoile extérieur</button>
+                <button class="btn" type="button" data-asm="moulin_horaire">Moulin horaire</button>
+                <button class="btn" type="button" data-asm="moulin_anti">Moulin anti-horaire</button>
+                <button class="btn" type="button" data-asm="natte">Natté 0°/90°</button>
+                <button class="btn" type="button" data-asm="miroir">Miroir / Flamme</button>
+              </div>
+              <button id="btn-rot-tile" class="btn" style="width: 100%; margin-top: 8px;" type="button">
+                Tourner le quartier de 90° (actuel : <span id="out-c6-rot">0°</span>)
+              </button>
+            </div>
+
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top" style="margin-bottom: 8px;">
+                <span class="ctrl-label">Multiplication dans la section</span>
+              </div>
+              <div class="seg-5">
+                <button class="btn active" type="button" data-mult="1">1×1</button>
+                <button class="btn" type="button" data-mult="2">2×2</button>
+                <button class="btn" type="button" data-mult="3">3×3</button>
+                <button class="btn" type="button" data-mult="4">4×4</button>
+                <button class="btn" type="button" data-mult="6">6×6</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c6-side">Côté du barreau final — Dim X = Dim Y</label>
+                <span class="ctrl-val" id="out-c6-side">40 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c6-side" data-dir="-1">−</button>
+                <input id="c6-side" type="range" min="25" max="60" step="1" value="40" />
+                <button class="step-btn" type="button" data-target="c6-side" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c6-cal">Perte calamine (soudures)</label>
+                <span class="ctrl-val" id="out-c6-cal">4 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c6-cal" data-dir="-1">−</button>
+                <input id="c6-cal" type="range" min="0" max="15" step="1" value="4" />
+                <button class="step-btn" type="button" data-target="c6-cal" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c6-abr">Perte abrasion / rectification</label>
+                <span class="ctrl-val" id="out-c6-abr">5 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c6-abr" data-dir="-1">−</button>
+                <input id="c6-abr" type="range" min="0" max="20" step="1" value="5" />
+                <button class="step-btn" type="button" data-target="c6-abr" data-dir="1">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">4 blocs avec joints → Rendu final soudé &amp; multiplié</h2>
+            <span class="spec-chip">Longueur résiduelle : <strong id="c6-chip-len">55 mm</strong></span>
+          </div>
+
+          <div class="grid-2-equal">
+            <div class="canvas-card">
+              <div class="canvas-title">1. 4 blocs avec joints avant soudure</div>
+              <div class="canvas-holder"><canvas id="cv-c6-blocks" width="320" height="320"></canvas></div>
+              <span class="canvas-len-tag">Contrôle d'orientation</span>
+              <div class="canvas-note">Joints laiton visibles avant soudure</div>
+            </div>
+
+            <div class="canvas-card">
+              <div class="canvas-title">2. Rendu final soudé &amp; multiplié</div>
+              <div class="canvas-holder"><canvas id="cv-c6-final" width="320" height="320"></canvas></div>
+              <span class="canvas-len-tag" id="c6-len-2">Longueur résiduelle : L = 55 mm</span>
+              <div class="canvas-note">Motif projeté à la coupe en biais</div>
+            </div>
+          </div>
+
+          <div class="chroma-box">
+            <div class="chroma-head">
+              <span id="c6-chroma-xc">Carbone (Noir XC75) : 64 %</span>
+              <span id="c6-chroma-15">Nickel (Argent 15N20) : 36 %</span>
+            </div>
+            <div class="chroma-track">
+              <div id="c6-bar-xc" class="chroma-dark" style="width: 64%;"></div>
+              <div id="c6-bar-15" class="chroma-light" style="width: 36%;"></div>
+            </div>
+          </div>
+
+          <div class="specs-bar">
+            <span class="spec-chip">Masse avant coupe en biais : <strong id="c6-chip-mass">688 g</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-footer">
+        <button class="btn" data-goto="5" type="button">← Chapitre précédent</button>
+        <button class="btn brass" data-goto="7" type="button">Chapitre suivant →</button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         CHAPITRE 7 — COUPE EN BIAIS 30°–40° & RETOURNEMENT 1:1
+         ====================================================================== -->
+    <section id="chapter-7" class="chapter-panel">
+      <div class="cut-hero">
+        <div>
+          <div class="cut-kicker" id="c7-hero-kicker">Épaisseur H à forger avant coupe (Objectif Carré 1:1)</div>
+          <div class="cut-big" id="c7-hero-val">12,8 mm</div>
+          <div class="cut-sub" id="c7-hero-sub">pour un barreau de 39,1 mm de large coupé à 30°</div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 9px;">
+          <div class="seg-2" style="min-width: 290px;">
+            <button id="c7-mode-auto" class="btn brass" type="button">Objectif Carré 1:1 (auto)</button>
+            <button id="c7-mode-libre" class="btn" type="button">Simulation Libre</button>
+          </div>
+          <div id="c7-ratio-pill" class="ratio-pill ok">
+            <span class="ratio-dot"></span>
+            <span id="c7-ratio-txt">1,00 : 1,00 — Carré parfait</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="c7-alert" class="alert-strip hidden" role="status"></div>
+
+      <div class="workspace">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M3 20h18M4 20L19 5" />
+                <path d="M10 20a6 6 0 0 0-1.8-4.2" />
+              </svg>
+              Coupe en biais &amp; Retournement 1:1
+            </h2>
+            <span class="chapter-badge">CHAPITRE 7</span>
+          </div>
+
+          <div class="controls-stack">
+            <div class="ctrl-box highlight">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-theta">Angle de coupe en biais (θ)</label>
+                <span class="ctrl-val" id="out-c7-theta">30°</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-theta" data-dir="-1">−</button>
+                <input id="c7-theta" type="range" min="25" max="45" step="1" value="30" />
+                <button class="step-btn" type="button" data-target="c7-theta" data-dir="1">+</button>
+              </div>
+              <div class="ctrl-hint"><span>25°</span><span>Standard d'atelier : 30°–40°</span><span>45°</span></div>
+            </div>
+
+            <div id="c7-hman-box" class="ctrl-box highlight hidden">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-hman">Épaisseur H avant coupe</label>
+                <span class="ctrl-val" id="out-c7-hman">16,0 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-hman" data-dir="-1">−</button>
+                <input id="c7-hman" type="range" min="8" max="40" step="0.5" value="16" />
+                <button class="step-btn" type="button" data-target="c7-hman" data-dir="1">+</button>
+              </div>
+              <button id="btn-c7-snap" class="btn" style="width: 100%; margin-top: 8px;" type="button">
+                Ajuster H au carré 1:1 (<span id="c7-snap-val">12,8 mm</span>)
+              </button>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-wbar">Largeur barreau avant coupe</label>
+                <span class="ctrl-val" id="out-c7-wbar">39 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-wbar" data-dir="-1">−</button>
+                <input id="c7-wbar" type="range" min="20" max="65" step="1" value="39" />
+                <button class="step-btn" type="button" data-target="c7-wbar" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-ef">Épaisseur brut final</label>
+                <span class="ctrl-val" id="out-c7-ef">7,0 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-ef" data-dir="-1">−</button>
+                <input id="c7-ef" type="range" min="5.0" max="10.0" step="0.5" value="7.0" />
+                <button class="step-btn" type="button" data-target="c7-ef" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-etile">Épaisseur des tuiles découpées</label>
+                <span class="ctrl-val" id="out-c7-etile">14,0 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-etile" data-dir="-1">−</button>
+                <input id="c7-etile" type="range" min="8.0" max="24.0" step="0.5" value="14.0" />
+                <button class="step-btn" type="button" data-target="c7-etile" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-alpha">Facteur d'allongement au forgeage (α)</label>
+                <span class="ctrl-val" id="out-c7-alpha">0,80</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-alpha" data-dir="-1">−</button>
+                <input id="c7-alpha" type="range" min="0.50" max="0.95" step="0.05" value="0.80" />
+                <button class="step-btn" type="button" data-target="c7-alpha" data-dir="1">+</button>
+              </div>
+              <div class="ctrl-hint"><span>0,50 (Uniforme)</span><span>Part longueur vs hauteur</span><span>0,95 (Longueur)</span></div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-kerf">Trait de scie</label>
+                <span class="ctrl-val" id="out-c7-kerf">1,5 mm</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-kerf" data-dir="-1">−</button>
+                <input id="c7-kerf" type="range" min="0.5" max="3.0" step="0.1" value="1.5" />
+                <button class="step-btn" type="button" data-target="c7-kerf" data-dir="1">+</button>
+              </div>
+            </div>
+
+            <div class="ctrl-box">
+              <div class="ctrl-top">
+                <label class="ctrl-label" for="c7-lfinal">Pertes calamine / rectification</label>
+                <span class="ctrl-val" id="out-c7-lfinal">6 %</span>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" type="button" data-target="c7-lfinal" data-dir="-1">−</button>
+                <input id="c7-lfinal" type="range" min="0" max="15" step="1" value="6" />
+                <button class="step-btn" type="button" data-target="c7-lfinal" data-dir="1">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- 1. Barreau avant coupe en biais + 2. Tuile retournée avant/après -->
+          <div class="grid-2-equal">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">1. Barreau avant coupe à <span id="c7-title-theta">30</span>°</h2>
+                <span class="spec-chip">Tuiles débitables : <strong id="c7-chip-tiles">5</strong></span>
+              </div>
+              <div class="svg-frame">
+                <svg id="svg-c7-cut" viewBox="0 0 460 180" role="img" aria-label="Tracé des coupes en biais"></svg>
+              </div>
+              <div class="specs-bar">
+                <span class="spec-chip">Barreau : <strong id="c7-chip-bar">175 × 39 × 12,8 mm</strong></span>
+                <span class="spec-chip">Pas : <strong id="c7-chip-pitch">31,0 mm</strong></span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">2. Tuile retournée (avant / après)</h2>
+                <span class="spec-chip">Ratio : <strong id="c7-chip-ratio2">1,00 : 1,00</strong></span>
+              </div>
+              <div class="svg-frame">
+                <svg id="svg-c7-tile" viewBox="0 0 460 180" role="img" aria-label="Tuile retournée avant et après écrasement"></svg>
+              </div>
+              <div class="specs-bar">
+                <span class="spec-chip">Avant : <strong id="c7-chip-pre">25,6 × 39 × 14 mm</strong></span>
+                <span class="spec-chip">Après : <strong id="c7-chip-post">45,0 × 45,0 × 7 mm</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Plat brut de lame final -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">3. Plat brut de lame final (<span id="c7-title-ef">7,0</span> mm)</h2>
+              <span class="spec-chip">Brut obtenu : <strong id="c7-chip-blade">225 × 45,0 × 7,0 mm</strong></span>
+            </div>
+            <div class="canvas-card" style="padding: 10px;">
+              <div class="canvas-holder">
+                <canvas id="cv-c7-blade" width="760" height="215"></canvas>
+              </div>
+            </div>
+            <div class="specs-bar">
+              <span class="spec-chip">1 motif final : <strong id="c7-chip-motif">45,0 × 45,0 mm</strong></span>
+              <span class="spec-chip">Écrasement : <strong id="c7-chip-r">×2,00</strong></span>
+              <span class="spec-chip">Structure : <strong id="c7-chip-struct">5 motifs pleine hauteur</strong></span>
+            </div>
+          </div>
+
+          <!-- Bilan matière complet -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Bilan matière complet (Trousse initiale → Brut utile)</h2>
+            </div>
+            <table class="loss-table">
+              <thead>
+                <tr>
+                  <th>Poste</th>
+                  <th style="text-align: right;">Volume (cm³)</th>
+                  <th style="text-align: right;">Masse (g)</th>
+                  <th style="text-align: right;">Part (%)</th>
+                </tr>
+              </thead>
+              <tbody id="c7-loss-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-footer">
+        <button class="btn" data-goto="6" type="button">← Chapitre précédent</button>
+        <button class="btn brass" data-goto="1" type="button">Retour au Chapitre 1 : Catalogue →</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /**
+     * =========================================================================
+     * ATELIER DAMAS — MODULE MOSAÏQUE | par Samuel Grosset
+     * Architecture en 7 chapitres indépendants · 100 % en millimètres
+     * Moteur de rétro-projection 2D temps réel (HTML5 Canvas) · Zéro dépendance
+     * =========================================================================
+     */
+    (function () {
+      'use strict';
+
+      const DENSITE = 7.85; // g/cm³
+
+      function fr(val, dec) {
+        return Number(val).toFixed(dec).replace('.', ',');
+      }
+
+      // =======================================================================
+      // CATALOGUE DES 10 MOTIFS STANDARDS (0 = XC75 noir, 1 = 15N20 argent)
+      // Index 0 = BAS de la trousse (fond du fluage Ω)
+      // =======================================================================
+      const CATALOGUE = {
+        coeur_sombre: {
+          nom: 'Étoile Cœur Sombre',
+          layers: [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+          c3X: 20, c3Y: 50, c4N: 4, c4X: 35, c4Y: 35, c5Diag: true, c5X: 28, c5Y: 28,
+          asm: 'etoile_centre', tileRot: 0
+        },
+        bord_sombre: {
+          nom: 'Étoile Bord Sombre',
+          layers: [1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0],
+          c3X: 20, c3Y: 50, c4N: 4, c4X: 35, c4Y: 35, c5Diag: true, c5X: 28, c5Y: 28,
+          asm: 'etoile_centre', tileRot: 180
+        },
+        etoile_claire: {
+          nom: 'Étoile Claire',
+          layers: [1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
+          c3X: 21, c3Y: 48, c4N: 4, c4X: 36, c4Y: 36, c5Diag: true, c5X: 28, c5Y: 28,
+          asm: 'etoile_centre', tileRot: 0
+        },
+        contrastee: {
+          nom: 'Étoile Contrastée',
+          layers: [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
+          c3X: 19, c3Y: 52, c4N: 4, c4X: 35, c4Y: 35, c5Diag: true, c5X: 28, c5Y: 28,
+          asm: 'etoile_centre', tileRot: 0
+        },
+        boule_feu: {
+          nom: 'Boule de Feu',
+          layers: [0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0],
+          c3X: 18, c3Y: 54, c4N: 5, c4X: 35, c4Y: 35, c5Diag: true, c5X: 28, c5Y: 28,
+          asm: 'miroir', tileRot: 0
+        },
+        moulin: {
+          nom: 'Moulin à Vent',
+          layers: [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+          c3X: 20, c3Y: 50, c4N: 4, c4X: 35, c4Y: 35, c5Diag: true, c5X: 28, c5Y: 28,
+          asm: 'moulin_horaire', tileRot: 0
+        },
+        natte: {
+          nom: 'Natté Classique',
+          layers: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+          c3X: 24, c3Y: 44, c4N: 4, c4X: 35, c4Y: 35, c5Diag: false, c5X: 28, c5Y: 28,
+          asm: 'natte', tileRot: 0
+        },
+        losange: {
+          nom: 'Losange Diamant',
+          layers: [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+          c3X: 21, c3Y: 48, c4N: 4, c4X: 35, c4Y: 35, c5Diag: true, c5X: 28, c5Y: 28,
+          asm: 'etoile_ext', tileRot: 0
+        },
+        croix: {
+          nom: 'Croix Architecturale',
+          layers: [0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+          c3X: 26, c3Y: 42, c4N: 3, c4X: 35, c4Y: 35, c5Diag: false, c5X: 28, c5Y: 28,
+          asm: 'etoile_centre', tileRot: 0
+        },
+        ecaille: {
+          nom: 'Damier Écaille',
+          layers: [0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
+          c3X: 18, c3Y: 54, c4N: 5, c4X: 35, c4Y: 35, c5Diag: false, c5X: 28, c5Y: 28,
+          asm: 'natte', tileRot: 90
+        }
+      };
+
+      // État global synchronisé sur les 7 chapitres
+      const state = {
+        chapter: 1, // Chapitre 1 (Catalogue) affiché par défaut
+        presetKey: 'coeur_sombre',
+
+        // Chapitre 1 : Répétitions & Objectif brut avant trempe
+        mult: 1,         // 1, 2, 3, 4, 6 (section)
+        reps: 5,         // 2..8 (longueur du brut)
+        tgtL: 220,       // mm (120..350)
+        tgtH: 45,        // mm (25..65)
+        tgtE: 7.0,       // mm (5..10)
+        showSeams: true,
+
+        // Chapitre 2 : Empilage initial
+        layers: CATALOGUE.coeur_sombre.layers.slice(),
+        c2W: 40,         // mm (20..60)
+        c2L: 100,        // mm (50..150)
+        eXC: 3.0,        // mm (1.5..5.0)
+        e15: 2.0,        // mm (1.0..4.0)
+
+        // Chapitre 3 : Mise en Ω
+        c3X: 20,         // mm (10..35)
+        c3Y: 50,         // mm (30..70)
+        c3Chamfer: 8.0,  // mm (3..14)
+        c3Cal: 4,        // %
+
+        // Chapitre 4 : Barreau Ω × N (strictement 1 seul étage)
+        c4N: 4,          // 3..6
+        c4X: 35,         // mm (20..60)
+        c4Y: 35,         // mm (20..60)
+        c4Cal: 4,        // %
+        c4Abr: 5,        // %
+
+        // Chapitre 5 : Diagonale 45°
+        c5Diag: true,
+        c5X: 28,         // mm (20..60)
+        c5Y: 28,         // mm (20..60)
+        c5Cal: 3,        // %
+        c5Abr: 5,        // %
+
+        // Chapitre 6 : Assemblage 4 quartiers
+        asm: 'etoile_centre', // etoile_centre | etoile_ext | moulin_horaire | moulin_anti | natte | miroir
+        tileRot: 0,      // 0 | 90 | 180 | 270
+        c6Side: 40,      // mm (25..60)
+        c6Cal: 4,        // %
+        c6Abr: 5,        // %
+
+        // Chapitre 7 : Coupe en biais 30°–40° & Retournement 1:1
+        c7Mode: 'auto',  // auto | libre
+        c7Theta: 30,     // 25..45°
+        c7HMan: 16.0,    // mm (8..40)
+        c7WBar: 39,      // mm (20..65)
+        c7Etile: 14.0,   // mm (8..24)
+        c7Alpha: 0.80,   // 0.50..0.95
+        c7Kerf: 1.5,     // mm (0.5..3.0)
+        c7LossFinal: 6   // %
+      };
+
+      // Cache LUT haute précision (1024 points) + buffer 240×240 du motif final
+      const LUT_N = 1024;
+      const stackLUT = new Uint8Array(LUT_N);
+      const edgeLUT = new Float32Array(LUT_N);
+
+      const tileBuffer = document.createElement('canvas');
+      tileBuffer.width = 240;
+      tileBuffer.height = 240;
+
+      // Toast discret
+      const toastEl = document.getElementById('toast');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+      }
+
+      /* =======================================================================
+         1. CONSTRUCTION DE LA LUT D'EMPILAGE
+         ======================================================================= */
+      function buildLUT(layersArr, eXC, e15, dstStack, dstEdge) {
+        const th = layersArr.map(s => (s === 0 ? eXC : e15));
+        const total = th.reduce((a, b) => a + b, 0) || 1;
+        const cum = [];
+        let acc = 0;
+        for (let i = 0; i < th.length; i++) {
+          acc += th[i];
+          cum.push(acc / total);
+        }
+        for (let p = 0; p < LUT_N; p++) {
+          const t = (p + 0.5) / LUT_N;
+          let idx = 0;
+          while (idx < cum.length - 1 && t > cum[idx]) idx++;
+          dstStack[p] = layersArr[idx];
+          const prev = idx === 0 ? 0 : cum[idx - 1];
+          const next = cum[idx];
+          const dist = Math.min(Math.abs(t - prev), Math.abs(next - t));
+          dstEdge[p] = Math.min(1, dist * 70);
+        }
+      }
+
+      function sampleLUT(v0, lut, eLut) {
+        const c = v0 < -1 ? -1 : (v0 > 1 ? 1 : v0);
+        const idx = Math.min(LUT_N - 1, (((c + 1) * 0.5) * LUT_N) | 0);
+        return { steel: lut[idx], edge: eLut[idx] };
+      }
+
+      /* =======================================================================
+         2. MOTEUR DE RÉTRO-PROJECTION 2D (CHAÎNAGE FIDÈLE CH. 2 → CH. 6)
+         ======================================================================= */
+      function makeEvaluators(cfg, lut, eLut) {
+        const crushRatio = Math.max(1.0, cfg.c2W / Math.max(8, cfg.c3X));
+        const aspect = cfg.c3Y / Math.max(8, cfg.c3X);
+        const drag = Math.min(2.4, 0.28 + (crushRatio - 1.0) * 1.18);
+        const wallPower = Math.max(1.05, Math.min(2.8, 2.75 - (aspect - 1.0) * 0.62));
+        const eyeBulge = Math.min(1.45, 0.40 + (crushRatio - 1.0) * 0.55);
+
+        function evalFlat(u, v) {
+          return sampleLUT(v, lut, eLut);
+        }
+
+        function evalOctagon(u, v) {
+          const cx = Math.min(0.45, (cfg.c3Chamfer * 2) / Math.max(12, cfg.c2W));
+          const cy = Math.min(0.45, (cfg.c3Chamfer * 2) / Math.max(12, cfg.c2H));
+          const lim = 2 - (cx + cy) * 0.5;
+          if (Math.abs(u) + Math.abs(v) > lim) return null;
+          const v0 = v + (drag * 0.16) * Math.tanh(2.5 * v) * Math.pow(Math.abs(u), 2.1) * (1 - 0.5 * Math.abs(v));
+          return sampleLUT(v0, lut, eLut);
+        }
+
+        function evalOmega(u, v) {
+          const absU = Math.abs(u);
+          const absV = Math.abs(v);
+          const v0 =
+            v +
+            drag * Math.tanh(3.2 * v) * Math.pow(absU, wallPower) * (1 - 0.65 * absV) +
+            eyeBulge * Math.sin(Math.PI * v) * (1 - u * u) * 0.15 +
+            0.11 * drag * Math.sin(Math.PI * v) * Math.pow(absU, 2.0);
+          return sampleLUT(v0, lut, eLut);
+        }
+
+        // Strictement 1 seul étage de N barreaux côte à côte
+        function evalC4Before(u, v) {
+          const N = cfg.c4N;
+          const gx = ((u + 1) * 0.5) * N;
+          const fx = gx - Math.floor(gx);
+          if (N > 1 && (fx < 0.025 || fx > 0.975)) return { seam: true };
+          return evalOmega(fx * 2 - 1, v);
+        }
+
+        function evalC4After(u, v) {
+          const rawW = cfg.c4N * cfg.c3X;
+          const comp = Math.max(0, Math.min(1, (rawW / Math.max(10, cfg.c4X) - 1) / 2.2));
+          const su = u * (1 - 0.14 * comp * (1 - v * v));
+          const sv = v + 0.18 * comp * Math.sin(Math.PI * v) * (1 - u * u);
+          const gx = ((su + 1) * 0.5) * cfg.c4N;
+          const fx = gx - Math.floor(gx);
+          return evalOmega(fx * 2 - 1, sv);
+        }
+
+        function evalC5Pre(u, v) {
+          if (!cfg.c5Diag) return evalC4After(u, v);
+          const rx = (u - v) * 0.70710678;
+          const ry = (u + v) * 0.70710678;
+          if (Math.abs(rx) > 1 || Math.abs(ry) > 1) return null;
+          return evalC4After(rx, ry);
+        }
+
+        function evalC5Square(u, v) {
+          if (!cfg.c5Diag) return evalC4After(u, v);
+          const invS2 = 0.70710678;
+          const xr = (u - v) * invS2;
+          const yr = (u + v) * invS2;
+          const area4 = cfg.c4X * cfg.c4Y;
+          const area5 = cfg.c5X * cfg.c5Y;
+          const p = Math.max(0.28, Math.min(1.0, 0.48 + (area4 / Math.max(100, area5) - 1) * 0.45));
+          const rInf = Math.max(Math.abs(u), Math.abs(v));
+          const rInfRot = Math.max(Math.abs(xr), Math.abs(yr));
+          let sx = xr, sy = yr;
+          if (rInfRot > 1e-6) {
+            const exactScale = rInf / rInfRot;
+            const plasticWarp = 1 / (1 + 0.22 * p * (1 - rInf * rInf));
+            const blend = 0.6 + 0.4 * p;
+            const scale = (1 + blend * (exactScale - 1)) * plasticWarp;
+            sx = xr * scale;
+            sy = yr * scale;
+          }
+          return evalC4After(Math.max(-1, Math.min(1, sx)), Math.max(-1, Math.min(1, sy)));
+        }
+
+        // 6 modes d'assemblage 4 quartiers
+        function map4Way(cx, cy) {
+          const right = cx >= 0;
+          const top = cy >= 0;
+          const lx = right ? cx * 2 - 1 : cx * 2 + 1;
+          const ly = top ? cy * 2 - 1 : cy * 2 + 1;
+          let ux = lx, uy = ly;
+
+          if (cfg.asm === 'etoile_centre') {
+            ux = 2 * Math.abs(cx) - 1;
+            uy = 2 * Math.abs(cy) - 1;
+          } else if (cfg.asm === 'etoile_ext') {
+            ux = 1 - 2 * Math.abs(cx);
+            uy = 1 - 2 * Math.abs(cy);
+          } else if (cfg.asm === 'moulin_horaire') {
+            if (right && top)       { ux = lx;  uy = ly; }
+            else if (right && !top) { ux = -ly; uy = lx; }
+            else if (!right && !top){ ux = -lx; uy = -ly; }
+            else                    { ux = ly;  uy = -lx; }
+          } else if (cfg.asm === 'moulin_anti') {
+            if (right && top)       { ux = lx;  uy = ly; }
+            else if (!right && top) { ux = -ly; uy = lx; }
+            else if (!right && !top){ ux = -lx; uy = -ly; }
+            else                    { ux = ly;  uy = -lx; }
+          } else if (cfg.asm === 'miroir') {
+            ux = 2 * Math.abs(cx) - 1;
+            uy = top ? ly : -ly;
+          } else {
+            // Natté 0° / 90°
+            if (right !== top) { ux = -ly; uy = lx; }
+            else               { ux = lx;  uy = ly; }
+          }
+
+          let rx = ux, ry = uy;
+          if (cfg.tileRot === 90)       { rx = -uy; ry = ux; }
+          else if (cfg.tileRot === 180) { rx = -ux; ry = -uy; }
+          else if (cfg.tileRot === 270) { rx = uy;  ry = -ux; }
+          return { rx, ry };
+        }
+
+        function evalC6Blocks(u, v) {
+          if (Math.abs(u) < 0.018 || Math.abs(v) < 0.018) return { seam: true };
+          const { rx, ry } = map4Way(u, v);
+          return evalC5Square(rx, ry);
+        }
+
+        function evalC6Final(u, v) {
+          const m = cfg.mult;
+          const gx = ((u + 1) * 0.5) * m;
+          const gy = ((v + 1) * 0.5) * m;
+          const cx = (gx - Math.floor(gx)) * 2 - 1;
+          const cy = (gy - Math.floor(gy)) * 2 - 1;
+          const { rx, ry } = map4Way(cx, cy);
+          return evalC5Square(rx, ry);
+        }
+
+        return {
+          crushRatio, evalFlat, evalOctagon, evalOmega,
+          evalC4Before, evalC4After, evalC5Pre, evalC5Square,
+          evalC6Blocks, evalC6Final
+        };
+      }
+
+      /* =======================================================================
+         3. CALCULS MATIÈRE, LONGUEURS RÉSIDUELLES & COUPE EN BIAIS 1:1
+         ======================================================================= */
+      function computeAllMetrics() {
+        let c2H = 0, hXC = 0, h15 = 0;
+        for (let i = 0; i < state.layers.length; i++) {
+          if (state.layers[i] === 0) { c2H += state.eXC; hXC += state.eXC; }
+          else { c2H += state.e15; h15 += state.e15; }
+        }
+        if (c2H <= 0) c2H = 1;
+
+        // Chapitre 2 : Empilage initial
+        const v2 = (state.c2W * c2H * state.c2L) / 1000;
+        const m2 = v2 * DENSITE;
+        const l2 = state.c2L;
+
+        // Chapitre 3 : Mise en Ω
+        const v3Cal = v2 * (state.c3Cal / 100);
+        const v3 = v2 - v3Cal;
+        const m3 = v3 * DENSITE;
+        const l3 = (v3 * 1000) / Math.max(1, state.c3X * state.c3Y);
+        const chamferSlopeMm = state.c3Chamfer * Math.SQRT2;
+
+        // Chapitre 4 : Barreau Ω × N (1 seul étage)
+        const sawLen4 = Math.max(0, (state.c4N - 1) * state.c7Kerf);
+        const l4Troncon = Math.max(4, (l3 - sawLen4) / state.c4N);
+        const v4Saw = Math.min(v3, (state.c3X * state.c3Y * sawLen4) / 1000);
+        const v4Raw = Math.max(0.1, v3 - v4Saw);
+        const v4Cal = v4Raw * (state.c4Cal / 100);
+        const v4a = v4Raw - v4Cal;
+        const v4Abr = v4a * (state.c4Abr / 100);
+        const v4 = v4a - v4Abr;
+        const m4 = v4 * DENSITE;
+        const l4 = (v4 * 1000) / Math.max(1, state.c4X * state.c4Y);
+
+        // Chapitre 5 : Diagonale 45° (si désactivée, aucune perte supplémentaire)
+        const diag5 = state.c5Diag ? Math.hypot(state.c4X, state.c4Y) : state.c4X;
+        const v5Cal = state.c5Diag ? v4 * (state.c5Cal / 100) : 0;
+        const v5a = v4 - v5Cal;
+        const v5Abr = state.c5Diag ? v5a * (state.c5Abr / 100) : 0;
+        const v5 = v5a - v5Abr;
+        const m5 = v5 * DENSITE;
+        const sec5X = state.c5Diag ? state.c5X : state.c4X;
+        const sec5Y = state.c5Diag ? state.c5Y : state.c4Y;
+        const l5 = (v5 * 1000) / Math.max(1, sec5X * sec5Y);
+
+        // Chapitre 6 : Assemblage 4 quartiers
+        const v6Cal = v5 * (state.c6Cal / 100);
+        const v6a = v5 - v6Cal;
+        const v6Abr = v6a * (state.c6Abr / 100);
+        const v6 = v6a - v6Abr;
+        const m6 = v6 * DENSITE;
+        const l6 = (v6 * 1000) / Math.max(1, state.c6Side * state.c6Side);
+
+        // Chapitre 7 : Coupe en biais & Retournement 1:1
+        const rad = (state.c7Theta * Math.PI) / 180;
+        const sinT = Math.sin(rad);
+        const tanT = Math.tan(rad);
+        const ef = state.tgtE;
+        const noForgeWarn = state.c7Etile < ef;
+        const R = Math.max(1, state.c7Etile / ef);
+        const a = state.c7Alpha;
+
+        const W7 = state.c7WBar;
+        const H_opt = W7 * sinT * Math.pow(R, 1 - 2 * a);
+        const H = state.c7Mode === 'auto' ? H_opt : state.c7HMan;
+
+        const l7Bar = (v6 * 1000) / Math.max(1, W7 * H);
+        const D = H / sinT;
+        const pitch = (state.c7Etile + state.c7Kerf) / sinT;
+        const endWaste = H / tanT;
+        const N_dispo = Math.max(0, Math.floor((l7Bar - endWaste) / pitch));
+
+        const M_L = D * Math.pow(R, a);
+        const M_W = W7 * Math.pow(R, 1 - a);
+        const ratio = M_L / Math.max(0.01, M_W);
+
+        const bladeL_reps = state.reps * M_L;
+        const bladeH = M_W;
+
+        const tilesVol = (N_dispo * W7 * D * state.c7Etile) / 1000;
+        const cutLoss7 = Math.max(0, v6 - tilesVol);
+        const finalLoss7 = tilesVol * (state.c7LossFinal / 100);
+        const usableVol = Math.max(0, tilesVol - finalLoss7);
+        const usableMass = usableVol * DENSITE;
+
+        const totalCal = v3Cal + v4Cal + v5Cal + v6Cal;
+        const totalAbr = v4Abr + v5Abr + v6Abr;
+        const totalCut = v4Saw + cutLoss7;
+
+        // Longueur résiduelle selon le chapitre actif (1..7)
+        const lenMap = {
+          1: bladeL_reps,
+          2: l2,
+          3: l3,
+          4: l4,
+          5: l5,
+          6: l6,
+          7: bladeL_reps
+        };
+        const activeLen = lenMap[state.chapter] || l2;
+        const lossG = Math.max(0, m2 - usableMass);
+        const lossPct = m2 > 0 ? (lossG / m2) * 100 : 0;
+
+        return {
+          c2H, pctXC: (hXC / c2H) * 100, pct15: (h15 / c2H) * 100,
+          v2, m2, l2,
+          v3, m3, l3, chamferSlopeMm,
+          l4Troncon, v4, m4, l4,
+          diag5, sec5X, sec5Y, v5, m5, l5,
+          v6, m6, l6,
+          sinT, tanT, ef, noForgeWarn, R, W7, H_opt, H, l7Bar, D, pitch, endWaste,
+          N_dispo, M_L, M_W, ratio, bladeL_reps, bladeH,
+          totalCal, totalAbr, totalCut, finalLoss7, usableVol, usableMass,
+          activeLen, lossG, lossPct
+        };
+      }
+
+      /**
+       * Synchronise la largeur barreau avant coupe (Ch. 7) et la longueur de trousse (Ch. 2)
+       * à partir des cotes du brut avant trempe choisies dans le Chapitre 1
+       */
+      function syncFromTargetBrut() {
+        const R = Math.max(1, state.c7Etile / state.tgtE);
+        const wCalc = Math.round(state.tgtH / Math.pow(R, 1 - state.c7Alpha));
+        state.c7WBar = Math.min(65, Math.max(20, wCalc));
+        document.getElementById('c7-wbar').value = state.c7WBar;
+
+        const m = computeAllMetrics();
+        const neededBarL = m.endWaste + state.reps * m.pitch + 4;
+        const neededV6 = (m.W7 * m.H * neededBarL) / 1000;
+        const y5 = state.c5Diag ? (1 - state.c5Cal / 100) * (1 - state.c5Abr / 100) : 1;
+        const yieldPre7 =
+          (1 - state.c3Cal / 100) *
+          (1 - state.c4Cal / 100) * (1 - state.c4Abr / 100) *
+          y5 *
+          (1 - state.c6Cal / 100) * (1 - state.c6Abr / 100) * 0.94;
+        const neededV2 = neededV6 / Math.max(0.25, yieldPre7);
+        const lCalc = Math.round(((neededV2 * 1000) / Math.max(1, state.c2W * m.c2H)) / 5) * 5;
+        state.c2L = Math.min(150, Math.max(50, lCalc));
+        document.getElementById('c2-l').value = state.c2L;
+        syncC2LenPills();
+      }
+
+      /* =======================================================================
+         4. DESSIN ARCHITECTURAL LAITON (COTES & PENTE OBLIQUE 45° OCTOGONE)
+         ======================================================================= */
+      function drawArrow(ctx, x, y, ux, uy, color) {
+        ctx.save();
+        ctx.fillStyle = color;
+        const sz = 4.6;
+        const px = -uy * 2.3;
+        const py = ux * 2.3;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + ux * sz + px, y + uy * sz + py);
+        ctx.lineTo(x + ux * sz - px, y + uy * sz - py);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawArchDimensions(ctx, x0, y0, w, h, labelX, labelY) {
+        ctx.save();
+        const brass = '#c8a464';
+        const brassL = '#dec082';
+        const guide = 'rgba(200, 164, 100, 0.35)';
+
+        ctx.strokeStyle = 'rgba(200, 164, 100, 0.56)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x0 - 0.5, y0 - 0.5, w + 1, h + 1);
+
+        // Cote horizontale (haut)
+        const yDim = y0 - 15;
+        ctx.strokeStyle = guide;
+        ctx.beginPath();
+        ctx.moveTo(x0, y0 - 3); ctx.lineTo(x0, yDim - 4);
+        ctx.moveTo(x0 + w, y0 - 3); ctx.lineTo(x0 + w, yDim - 4);
+        ctx.stroke();
+
+        ctx.strokeStyle = brass;
+        ctx.beginPath();
+        ctx.moveTo(x0, yDim); ctx.lineTo(x0 + w, yDim);
+        ctx.stroke();
+        drawArrow(ctx, x0, yDim, 1, 0, brass);
+        drawArrow(ctx, x0 + w, yDim, -1, 0, brass);
+
+        ctx.fillStyle = brassL;
+        ctx.font = '600 10.5px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(labelX, x0 + w / 2, yDim - 4);
+
+        // Cote verticale (droite)
+        const xDim = x0 + w + 15;
+        ctx.strokeStyle = guide;
+        ctx.beginPath();
+        ctx.moveTo(x0 + w + 3, y0); ctx.lineTo(xDim + 4, y0);
+        ctx.moveTo(x0 + w + 3, y0 + h); ctx.lineTo(xDim + 4, y0 + h);
+        ctx.stroke();
+
+        ctx.strokeStyle = brass;
+        ctx.beginPath();
+        ctx.moveTo(xDim, y0); ctx.lineTo(xDim, y0 + h);
+        ctx.stroke();
+        drawArrow(ctx, xDim, y0, 0, 1, brass);
+        drawArrow(ctx, xDim, y0 + h, 0, -1, brass);
+
+        ctx.save();
+        ctx.translate(xDim + 13, y0 + h / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillStyle = brassL;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(labelY, 0, 0);
+        ctx.restore();
+        ctx.restore();
+      }
+
+      function drawOctagonSlopeCallout(ctx, x0, y0, rw, rh, chamferMm, c2W, c2H) {
+        const cx = Math.min(0.45, (chamferMm * 2) / Math.max(12, c2W));
+        const cy = Math.min(0.45, (chamferMm * 2) / Math.max(12, c2H));
+        const lim = 2 - (cx + cy) * 0.5;
+        const cutPxX = ((2 - lim) * 0.5) * rw;
+        const cutPxY = ((2 - lim) * 0.5) * rh;
+
+        const p1x = x0, p1y = y0 + cutPxY;
+        const p2x = x0 + cutPxX, p2y = y0;
+        const dx = p2x - p1x, dy = p2y - p1y;
+        const len = Math.hypot(dx, dy) || 1;
+        const ux = dx / len, uy = dy / len;
+        const nx = uy, ny = -ux;
+        const off = 11;
+
+        const q1x = p1x + nx * off, q1y = p1y + ny * off;
+        const q2x = p2x + nx * off, q2y = p2y + ny * off;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(222, 192, 130, 0.52)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(p1x, p1y); ctx.lineTo(q1x + nx * 3, q1y + ny * 3);
+        ctx.moveTo(p2x, p2y); ctx.lineTo(q2x + nx * 3, q2y + ny * 3);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#dec082';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(q1x, q1y); ctx.lineTo(q2x, q2y);
+        ctx.stroke();
+
+        drawArrow(ctx, q1x, q1y, ux, uy, '#dec082');
+        drawArrow(ctx, q2x, q2y, -ux, -uy, '#dec082');
+
+        const mx = (q1x + q2x) / 2 + nx * 10;
+        const my = (q1y + q2y) / 2 + ny * 10;
+        ctx.translate(mx, my);
+        ctx.rotate(Math.atan2(dy, dx));
+        ctx.fillStyle = '#dec082';
+        ctx.font = '600 9.5px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(`45° · C = ${fr(chamferMm * Math.SQRT2, 1)} mm`, 0, -2);
+        ctx.restore();
+      }
+
+      /* =======================================================================
+         5. RENDUS CANVAS (BUFFER 240×240, SECTIONS COTÉES, BRUT DE LAME)
+         ======================================================================= */
+      function renderTileBuffer(evalC6Final) {
+        const ctx = tileBuffer.getContext('2d');
+        const w = tileBuffer.width, h = tileBuffer.height;
+        const img = ctx.createImageData(w, h);
+        const data = img.data;
+        let darkPx = 0;
+
+        for (let py = 0; py < h; py++) {
+          const v = 1 - (2 * py) / (h - 1);
+          for (let px = 0; px < w; px++) {
+            const u = (2 * px) / (w - 1) - 1;
+            const res = evalC6Final(u, v);
+            const idx = (py * w + px) * 4;
+            if (res.steel === 0) darkPx++;
+            const grain = (((px * 73856093) ^ (py * 19349663)) & 15) - 7;
+            const edgeHi = (1 - res.edge) * 14;
+            if (res.steel === 0) {
+              // XC75 noir anthracite (#171a19)
+              const b = 23 + grain * 0.35 - edgeHi * 0.4;
+              data[idx]     = Math.max(10, Math.min(255, b));
+              data[idx + 1] = Math.max(12, Math.min(255, b + 3));
+              data[idx + 2] = Math.max(11, Math.min(255, b + 2));
+            } else {
+              // 15N20 argent clair (#e4e8e6)
+              const b = 224 + grain * 0.4 + edgeHi;
+              data[idx]     = Math.max(0, Math.min(255, b));
+              data[idx + 1] = Math.max(0, Math.min(255, b + 4));
+              data[idx + 2] = Math.max(0, Math.min(255, b + 2));
+            }
+            data[idx + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        const pctDark = (darkPx / (w * h)) * 100;
+        return { pctDark, pctLight: 100 - pctDark };
+      }
+
+      function renderSectionCanvas(canvasId, evaluator, dimX, dimY, opts) {
+        const cv = document.getElementById(canvasId);
+        if (!cv) return;
+        const ctx = cv.getContext('2d');
+        const cw = cv.width, ch = cv.height;
+
+        ctx.fillStyle = '#0a1411';
+        ctx.fillRect(0, 0, cw, ch);
+
+        const padL = (opts && opts.extraLeft) ? 40 : 22;
+        const padT = 36, padR = 40, padB = 18;
+        const maxW = cw - padL - padR, maxH = ch - padT - padB;
+        const scale = Math.min(maxW / Math.max(1, dimX), maxH / Math.max(1, dimY));
+        const rw = Math.max(24, Math.round(dimX * scale));
+        const rh = Math.max(24, Math.round(dimY * scale));
+        const x0 = Math.round(padL + (maxW - rw) / 2);
+        const y0 = Math.round(padT + (maxH - rh) / 2);
+
+        const img = ctx.createImageData(rw, rh);
+        const data = img.data;
+        for (let py = 0; py < rh; py++) {
+          const v = 1 - (2 * py) / Math.max(1, rh - 1);
+          for (let px = 0; px < rw; px++) {
+            const u = (2 * px) / Math.max(1, rw - 1) - 1;
+            const idx = (py * rw + px) * 4;
+            const res = evaluator(u, v);
+            if (!res) {
+              data[idx] = 10; data[idx + 1] = 20; data[idx + 2] = 17; data[idx + 3] = 255;
+              continue;
+            }
+            if (res.seam) {
+              data[idx] = 200; data[idx + 1] = 164; data[idx + 2] = 100; data[idx + 3] = 215;
+              continue;
+            }
+            const grain = (((px * 73856093) ^ (py * 19349663)) & 15) - 7;
+            const edgeHi = (1 - res.edge) * 14;
+            if (res.steel === 0) {
+              const b = 23 + grain * 0.35 - edgeHi * 0.4;
+              data[idx]     = Math.max(10, Math.min(255, b));
+              data[idx + 1] = Math.max(12, Math.min(255, b + 3));
+              data[idx + 2] = Math.max(11, Math.min(255, b + 2));
+            } else {
+              const b = 224 + grain * 0.4 + edgeHi;
+              data[idx]     = Math.max(0, Math.min(255, b));
+              data[idx + 1] = Math.max(0, Math.min(255, b + 4));
+              data[idx + 2] = Math.max(0, Math.min(255, b + 2));
+            }
+            data[idx + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, x0, y0);
+        drawArchDimensions(ctx, x0, y0, rw, rh, `${fr(dimX, dimX % 1 ? 1 : 0)} mm`, `${fr(dimY, dimY % 1 ? 1 : 0)} mm`);
+
+        if (opts && opts.octagonSlope) {
+          drawOctagonSlopeCallout(ctx, x0, y0, rw, rh, opts.chamferMm, opts.c2W, opts.c2H);
+        }
+      }
+
+      function renderBladeProjection(canvasId, m, showSeams) {
+        const cv = document.getElementById(canvasId);
+        if (!cv) return;
+        const ctx = cv.getContext('2d');
+        const cw = cv.width, ch = cv.height;
+
+        ctx.fillStyle = '#0a1411';
+        ctx.fillRect(0, 0, cw, ch);
+
+        const padX = 48, padY = 38;
+        const totalL = Math.max(20, state.reps * m.M_L);
+        const scale = Math.min((cw - padX * 2) / totalL, (ch - padY * 2) / m.bladeH);
+        const drawW = totalL * scale;
+        const drawH = m.bladeH * scale;
+        const x0 = (cw - drawW) / 2;
+        const y0 = (ch - drawH) / 2 + 4;
+        const tileW = m.M_L * scale;
+
+        for (let i = 0; i < state.reps; i++) {
+          ctx.drawImage(tileBuffer, x0 + i * tileW, y0, tileW, drawH);
+          if (showSeams && i > 0) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(222, 192, 130, 0.58)';
+            ctx.setLineDash([4, 3]);
+            ctx.lineWidth = 1.1;
+            ctx.beginPath();
+            ctx.moveTo(x0 + i * tileW, y0);
+            ctx.lineTo(x0 + i * tileW, y0 + drawH);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        const isOk = m.ratio >= 0.96 && m.ratio <= 1.04;
+        if (!isOk) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(104, 190, 150, 0.78)';
+          ctx.setLineDash([4, 4]);
+          ctx.lineWidth = 1.4;
+          ctx.strokeRect(x0, y0, drawH, drawH);
+          ctx.restore();
+        }
+
+        drawArchDimensions(
+          ctx, x0, y0, drawW, drawH,
+          `${Math.round(m.bladeL_reps)} × ${fr(m.bladeH, 1)} × ${fr(m.ef, 1)} mm`,
+          `${fr(m.bladeH, 1)} mm`
+        );
+      }
+
+      /* =======================================================================
+         6. MINIATURES 80×80 DES 10 MOTIFS DU CATALOGUE
+         ======================================================================= */
+      function renderCatalogueThumbnails() {
+        const tmpLut = new Uint8Array(LUT_N);
+        const tmpEdge = new Float32Array(LUT_N);
+
+        Object.keys(CATALOGUE).forEach(key => {
+          const p = CATALOGUE[key];
+          const cv = document.getElementById(`thumb-${key}`);
+          if (!cv) return;
+          buildLUT(p.layers, 3.0, 2.0, tmpLut, tmpEdge);
+          let c2H = 0;
+          p.layers.forEach(s => { c2H += (s === 0 ? 3.0 : 2.0); });
+
+          const ev = makeEvaluators({
+            c2W: 40, c2H, c3X: p.c3X, c3Y: p.c3Y, c3Chamfer: 8,
+            c4N: p.c4N, c4X: p.c4X, c4Y: p.c4Y,
+            c5Diag: p.c5Diag, c5X: p.c5X, c5Y: p.c5Y,
+            asm: p.asm, tileRot: p.tileRot, mult: 1
+          }, tmpLut, tmpEdge);
+
+          const ctx = cv.getContext('2d');
+          const w = cv.width, h = cv.height;
+          const img = ctx.createImageData(w, h);
+          const d = img.data;
+          for (let py = 0; py < h; py++) {
+            const v = 1 - (2 * py) / (h - 1);
+            for (let px = 0; px < w; px++) {
+              const u = (2 * px) / (w - 1) - 1;
+              const res = ev.evalC6Final(u, v);
+              const idx = (py * w + px) * 4;
+              if (res.steel === 0) { d[idx] = 23; d[idx + 1] = 26; d[idx + 2] = 25; }
+              else { d[idx] = 228; d[idx + 1] = 232; d[idx + 2] = 230; }
+              d[idx + 3] = 255;
+            }
+          }
+          ctx.putImageData(img, 0, 0);
+        });
+      }
+
+      /* =======================================================================
+         7. SCHÉMAS SVG CHAPITRE 7 (BARREAU COUPÉ + TUILE RETOURNÉE)
+         ======================================================================= */
+      function renderC7SVGs(m) {
+        // 1. Barreau avant coupe en biais
+        const svg1 = document.getElementById('svg-c7-cut');
+        const vbW = 460, vbH = 180;
+        const padX = 28, padY = 44;
+        const scale = Math.min((vbW - padX * 2) / Math.max(15, m.l7Bar), (vbH - padY * 2) / Math.max(4, m.H));
+        const barW = Math.max(15, m.l7Bar) * scale;
+        const barH = Math.max(20, m.H * scale);
+        const x0 = (vbW - barW) / 2;
+        const y0 = (vbH - barH) / 2 + 4;
+
+        const wastePx = Math.min(m.endWaste * scale, barW);
+        const pitchPx = m.pitch * scale;
+        const tilePx = (state.c7Etile / m.sinT) * scale;
+        const kerfPx = (state.c7Kerf / m.sinT) * scale;
+
+        let tiles = `<polygon points="${x0},${y0} ${x0 + wastePx},${y0} ${x0},${y0 + barH}" fill="url(#h7)" stroke="#4f6b64" stroke-width="1" />`;
+        let cuts = '';
+        let lastTop = x0 + wastePx, lastBot = x0;
+
+        for (let i = 0; i < m.N_dispo; i++) {
+          const sb = x0 + i * pitchPx;
+          const st = x0 + wastePx + i * pitchPx;
+          const eb = sb + tilePx;
+          const et = st + tilePx;
+          const fill = i % 2 === 0 ? 'rgba(200, 164, 100, 0.24)' : 'rgba(228, 232, 230, 0.14)';
+          const stroke = i % 2 === 0 ? '#c8a464' : '#9bb0a7';
+          tiles += `<polygon points="${st},${y0} ${et},${y0} ${eb},${y0 + barH} ${sb},${y0 + barH}" fill="${fill}" stroke="${stroke}" stroke-width="1.2" />`;
+          if (tilePx > 13 && barH > 18) {
+            tiles += `<text x="${(st + et + sb + eb) / 4}" y="${y0 + barH / 2 + 4}" text-anchor="middle" fill="#f0ece1" font-size="10.5" font-family="monospace" font-weight="600">${i + 1}</text>`;
+          }
+          if (kerfPx > 0.4 && et < x0 + barW) {
+            cuts += `<polygon points="${et},${y0} ${Math.min(et + kerfPx, x0 + barW)},${y0} ${Math.min(eb + kerfPx, x0 + barW)},${y0 + barH} ${eb},${y0 + barH}" fill="#0a1411" opacity="0.92" />`;
+          }
+          lastTop = et + kerfPx;
+          lastBot = eb + kerfPx;
+        }
+        if (lastBot < x0 + barW) {
+          tiles += `<polygon points="${Math.min(lastTop, x0 + barW)},${y0} ${x0 + barW},${y0} ${x0 + barW},${y0 + barH} ${Math.min(lastBot, x0 + barW)},${y0 + barH}" fill="url(#h7)" stroke="#4f6b64" stroke-width="1" />`;
+        }
+
+        svg1.innerHTML = `
+          <defs>
+            <pattern id="h7" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="8" stroke="#4f6b64" stroke-width="1.5" opacity="0.55" />
+            </pattern>
+            <clipPath id="clip7"><rect x="${x0}" y="${y0}" width="${barW}" height="${barH}" /></clipPath>
+          </defs>
+          <rect width="${vbW}" height="${vbH}" fill="#0a1411" />
+          <rect x="${x0}" y="${y0}" width="${barW}" height="${barH}" fill="#11211c" />
+          <g clip-path="url(#clip7)">${tiles}${cuts}</g>
+          <rect x="${x0}" y="${y0}" width="${barW}" height="${barH}" fill="none" stroke="#c8a464" stroke-width="1.3" />
+          <text x="${vbW / 2}" y="${y0 - 14}" text-anchor="middle" fill="#f0ece1" font-size="11" font-family="monospace" font-weight="600">
+            L = ${Math.round(m.l7Bar)} mm · H = ${fr(m.H, 1)} mm · θ = ${state.c7Theta}°
+          </text>
+          <text x="${vbW / 2}" y="${y0 + barH + 20}" text-anchor="middle" fill="#dec082" font-size="10" font-family="monospace">
+            Pas = ${fr(m.pitch, 1)} mm · Chute bout = ${fr(m.endWaste, 1)} mm
+          </text>
+        `;
+
+        // 2. Tuile retournée avant / après écrasement
+        const svg2 = document.getElementById('svg-c7-tile');
+        const maxSide = Math.max(m.M_L, m.M_W, m.D, m.W7, 20);
+        const scT = 82 / maxSide;
+        const preW = Math.max(22, m.D * scT);
+        const preH = Math.max(22, m.W7 * scT);
+        const postW = Math.max(22, m.M_L * scT);
+        const postH = Math.max(22, m.M_W * scT);
+
+        const lx = 115 - preW / 2, ly = 96 - preH / 2;
+        const rx = 345 - postW / 2, ry = 96 - postH / 2;
+
+        svg2.innerHTML = `
+          <rect width="460" height="180" fill="#0a1411" />
+          <rect x="${lx}" y="${ly}" width="${preW}" height="${preH}" fill="rgba(200,164,100,0.16)" stroke="#c8a464" stroke-width="1.4" rx="2" />
+          <text x="115" y="26" text-anchor="middle" fill="#9bb0a7" font-size="10.5" font-family="sans-serif">Avant forge (ép. ${fr(state.c7Etile, 1)} mm)</text>
+          <text x="115" y="${ly + preH + 18}" text-anchor="middle" fill="#dec082" font-size="10.5" font-family="monospace">${fr(m.D, 1)} × ${fr(m.W7, 1)} mm</text>
+
+          <line x1="186" y1="96" x2="262" y2="96" stroke="#c8a464" stroke-width="1.5" />
+          <polygon points="266,96 257,91 257,101" fill="#c8a464" />
+          <text x="225" y="86" text-anchor="middle" fill="#f0ece1" font-size="10" font-family="monospace">Écrasement ×${fr(m.R, 2)}</text>
+          <text x="225" y="112" text-anchor="middle" fill="#9bb0a7" font-size="9.5" font-family="monospace">Ratio ${fr(m.ratio, 2)} : 1,00</text>
+
+          <rect x="${rx}" y="${ry}" width="${postW}" height="${postH}" fill="rgba(104,190,150,0.15)" stroke="#68be96" stroke-width="1.5" rx="2" />
+          <text x="345" y="26" text-anchor="middle" fill="#9bb0a7" font-size="10.5" font-family="sans-serif">Après forge (ép. ${fr(m.ef, 1)} mm)</text>
+          <text x="345" y="${ry + postH + 18}" text-anchor="middle" fill="#68be96" font-size="10.5" font-family="monospace">${fr(m.M_L, 1)} × ${fr(m.M_W, 1)} mm</text>
+        `;
+      }
+
+      /* =======================================================================
+         8. CONSTRUCTEUR DE COUCHES (CHAPITRE 2)
+         ======================================================================= */
+      function renderStackList() {
+        const el = document.getElementById('stack-pile');
+        el.innerHTML = '';
+        const hTot = state.layers.reduce((s, t) => s + (t === 0 ? state.eXC : state.e15), 0) || 1;
+        const targetH = Math.min(285, Math.max(180, state.layers.length * 21));
+
+        for (let i = state.layers.length - 1; i >= 0; i--) {
+          const is15 = state.layers[i] === 1;
+          const e = is15 ? state.e15 : state.eXC;
+          const hPx = Math.max(17, Math.round((e / hTot) * targetH));
+          const row = document.createElement('div');
+          row.className = `stack-row ${is15 ? 'n15n20' : 'xc75'}`;
+          row.style.height = `${hPx}px`;
+          const pos = i === 0 ? ' · BAS (Fond Ω)' : (i === state.layers.length - 1 ? ' · HAUT' : '');
+          row.innerHTML = `<span>#${i + 1} · ${is15 ? '15N20' : 'XC75'}${pos}</span><span>${fr(e, 1)} mm</span>`;
+          row.addEventListener('click', () => {
+            state.layers[i] = state.layers[i] === 0 ? 1 : 0;
+            updateAll();
+          });
+          el.appendChild(row);
+        }
+      }
+
+      /* =======================================================================
+         9. SYNCHRONISATION & MISE À JOUR GLOBALE
+         ======================================================================= */
+      function syncC2LenPills() {
+        document.querySelectorAll('[data-c2len]').forEach(b => {
+          b.classList.toggle('active', parseFloat(b.dataset.c2len) === state.c2L);
+        });
+      }
+
+      function syncMultButtons() {
+        document.querySelectorAll('[data-mult]').forEach(b => {
+          b.classList.toggle('active', parseInt(b.dataset.mult, 10) === state.mult);
+        });
+      }
+
+      function syncRepsControls() {
+        document.getElementById('cat-reps').value = state.reps;
+        document.querySelectorAll('[data-reps]').forEach(b => {
+          b.classList.toggle('active', parseInt(b.dataset.reps, 10) === state.reps);
+        });
+      }
+
+      function syncAsmButtons() {
+        document.querySelectorAll('[data-asm]').forEach(b => {
+          b.classList.toggle('active', b.dataset.asm === state.asm);
+        });
+      }
+
+      function updateAll() {
+        try {
+          buildLUT(state.layers, state.eXC, state.e15, stackLUT, edgeLUT);
+          const m = computeAllMetrics();
+          const ev = makeEvaluators({
+            c2W: state.c2W, c2H: m.c2H,
+            c3X: state.c3X, c3Y: state.c3Y, c3Chamfer: state.c3Chamfer,
+            c4N: state.c4N, c4X: state.c4X, c4Y: state.c4Y,
+            c5Diag: state.c5Diag, c5X: state.c5X, c5Y: state.c5Y,
+            asm: state.asm, tileRot: state.tileRot, mult: state.mult
+          }, stackLUT, edgeLUT);
+
+          // Rendu du buffer 240×240 du motif final + mesure Carbone/Nickel réelle
+          const chroma = renderTileBuffer(ev.evalC6Final);
+          const darkPct = Math.round(chroma.pctDark);
+          const lightPct = 100 - darkPct;
+
+          // --- Bandeau de suivi matière permanent ---
+          document.getElementById('tele-m0').textContent = `${Math.round(m.m2)} g`;
+          document.getElementById('tele-mfinal').textContent = `${Math.round(m.usableMass)} g`;
+          document.getElementById('tele-len-lbl').textContent = `Longueur résiduelle (Ch. ${state.chapter})`;
+          document.getElementById('tele-len').textContent = `${Math.round(m.activeLen)} mm`;
+          document.getElementById('tele-loss').textContent = `−${fr(m.lossPct, 1)} %`;
+
+          // Libellé explicite des deux niveaux de répétition
+          const repLabel = state.mult === 1
+            ? `${state.reps} motifs pleine hauteur (1 × ${state.reps})`
+            : `Grille ${state.mult} × ${state.mult * state.reps} motifs (${state.reps} tuiles de ${state.mult}×${state.mult})`;
+
+          // --- Chapitre 1 : Catalogue & Objectif brut ---
+          document.getElementById('out-cat-mult').textContent = `${state.mult}×${state.mult}`;
+          document.getElementById('out-cat-reps').textContent = `${state.reps} tuiles`;
+          document.getElementById('rep-summary-tag').textContent = repLabel;
+          document.getElementById('out-tgt-l').textContent = `${state.tgtL} mm`;
+          document.getElementById('out-tgt-h').textContent = `${state.tgtH} mm`;
+          document.getElementById('out-tgt-e').textContent = `${fr(state.tgtE, 1)} mm`;
+          document.getElementById('cat-theta-lbl').textContent = state.c7Theta;
+          document.getElementById('cat-h-val').textContent = `${fr(m.H_opt, 1)} mm`;
+          document.getElementById('cat-w-val').textContent = `${fr(m.W7, 1)} mm`;
+          document.getElementById('cat-rat-val').textContent = `${fr(m.ratio, 2)} : 1,00`;
+          document.getElementById('cat-tiles-fit').textContent =
+            m.N_dispo >= state.reps
+              ? `Barreau actuel : ${m.N_dispo} tuiles débitables (suffisant pour ${state.reps}).`
+              : `Barreau actuel : ${m.N_dispo} tuiles débitables (allongez la trousse au Ch. 2).`;
+          document.getElementById('cat-blade-dims').textContent =
+            `${Math.round(m.bladeL_reps)} × ${fr(m.bladeH, 1)} × ${fr(m.ef, 1)} mm`;
+
+          ['cat', 'c6'].forEach(prefix => {
+            document.getElementById(`${prefix}-chroma-xc`).textContent = `Carbone (Noir XC75) : ${darkPct} %`;
+            document.getElementById(`${prefix}-chroma-15`).textContent = `Nickel (Argent 15N20) : ${lightPct} %`;
+            document.getElementById(`${prefix}-bar-xc`).style.width = `${chroma.pctDark.toFixed(1)}%`;
+            document.getElementById(`${prefix}-bar-15`).style.width = `${chroma.pctLight.toFixed(1)}%`;
+          });
+
+          if (state.chapter === 1) {
+            renderBladeProjection('cv-cat-blade', m, state.showSeams);
+          }
+
+          // --- Chapitre 2 : Empilage initial ---
+          document.getElementById('out-c2-w').textContent = `${state.c2W} mm`;
+          document.getElementById('out-c2-l').textContent = `${state.c2L} mm`;
+          document.getElementById('out-c2-exc').textContent = `${fr(state.eXC, 1)} mm`;
+          document.getElementById('out-c2-e15').textContent = `${fr(state.e15, 1)} mm`;
+          document.getElementById('c2-len-tag').textContent = `Longueur L = ${Math.round(m.l2)} mm`;
+          document.getElementById('c2-kpi-sec').textContent = `${state.c2W} × ${fr(m.c2H, 1)} mm`;
+          document.getElementById('c2-kpi-cnt').textContent = `${state.layers.length}`;
+          document.getElementById('c2-kpi-rat').textContent = `${Math.round(m.pctXC)} % / ${Math.round(m.pct15)} %`;
+          document.getElementById('c2-kpi-mass').textContent = `${Math.round(m.m2)} g · ${fr(m.v2, 1)} cm³`;
+          if (state.chapter === 2) {
+            renderStackList();
+            renderSectionCanvas('cv-c2', ev.evalFlat, state.c2W, m.c2H);
+          }
+
+          // --- Chapitre 3 : Mise en Ω ---
+          document.getElementById('out-c3-x').textContent = `${state.c3X} mm`;
+          document.getElementById('out-c3-y').textContent = `${state.c3Y} mm`;
+          document.getElementById('out-c3-chamfer').textContent = `${fr(state.c3Chamfer, 1)} mm`;
+          document.getElementById('out-c3-cal').textContent = `${state.c3Cal} %`;
+          document.getElementById('c3-chip-len').textContent = `${Math.round(m.l3)} mm`;
+          document.getElementById('c3-len-1').textContent = `L = ${Math.round(m.l2)} mm`;
+          document.getElementById('c3-len-2').textContent = `45° · C = ${fr(m.chamferSlopeMm, 1)} mm`;
+          document.getElementById('c3-len-3').textContent = `L = ${Math.round(m.l3)} mm`;
+          document.getElementById('c3-chip-ratio').textContent = `×${fr(ev.crushRatio, 2)}`;
+          document.getElementById('c3-chip-chamfer').textContent = `45° · C = ${fr(m.chamferSlopeMm, 1)} mm`;
+          document.getElementById('c3-chip-mass').textContent = `${Math.round(m.m3)} g`;
+          if (state.chapter === 3) {
+            renderSectionCanvas('cv-c3-flat', ev.evalFlat, state.c2W, m.c2H);
+            renderSectionCanvas('cv-c3-oct', ev.evalOctagon, state.c2W, m.c2H, {
+              extraLeft: true, octagonSlope: true,
+              chamferMm: state.c3Chamfer, c2W: state.c2W, c2H: m.c2H
+            });
+            renderSectionCanvas('cv-c3-omega', ev.evalOmega, state.c3X, state.c3Y);
+          }
+
+          // --- Chapitre 4 : Barreau Ω × N ---
+          document.getElementById('out-c4-n').textContent = `${state.c4N} barreaux`;
+          document.getElementById('out-c4-x').textContent = `${state.c4X} mm`;
+          document.getElementById('out-c4-y').textContent = `${state.c4Y} mm`;
+          document.getElementById('out-c4-cal').textContent = `${state.c4Cal} %`;
+          document.getElementById('out-c4-abr').textContent = `${state.c4Abr} %`;
+          document.getElementById('c4-chip-len').textContent = `${Math.round(m.l4)} mm`;
+          document.getElementById('c4-len-troncon').textContent = `Longueur par tronçon : L = ${Math.round(m.l4Troncon)} mm`;
+          document.getElementById('c4-len-after').textContent = `Longueur résiduelle : L = ${Math.round(m.l4)} mm`;
+          document.getElementById('c4-chip-raw').textContent = `${state.c4N * state.c3X} × ${state.c3Y} mm`;
+          document.getElementById('c4-chip-mass').textContent = `${Math.round(m.m4)} g`;
+          if (state.chapter === 4) {
+            renderSectionCanvas('cv-c4-before', ev.evalC4Before, state.c4N * state.c3X, state.c3Y);
+            renderSectionCanvas('cv-c4-after', ev.evalC4After, state.c4X, state.c4Y);
+          }
+
+          // --- Chapitre 5 : Diagonale 45° ---
+          document.getElementById('c5-use-diag').checked = state.c5Diag;
+          document.getElementById('c5-diag-controls').classList.toggle('hidden', !state.c5Diag);
+          document.getElementById('out-c5-x').textContent = `${state.c5X} mm`;
+          document.getElementById('out-c5-y').textContent = `${state.c5Y} mm`;
+          document.getElementById('out-c5-cal').textContent = `${state.c5Cal} %`;
+          document.getElementById('out-c5-abr').textContent = `${state.c5Abr} %`;
+          document.getElementById('c5-chip-len').textContent = `${Math.round(m.l5)} mm`;
+          document.getElementById('c5-len-tag').textContent = `Longueur résiduelle : L = ${Math.round(m.l5)} mm`;
+          document.getElementById('c5-chip-mass').textContent = `${Math.round(m.m5)} g`;
+          document.getElementById('c5-visual-heading').textContent = state.c5Diag
+            ? 'Bascule en losange 45° → Carré diagonal reforgé'
+            : 'Passage direct au carré (diagonale 45° désactivée)';
+          document.getElementById('c5-t1').textContent = state.c5Diag
+            ? '1. Bascule en losange (45°)'
+            : '1. Bloc droit (sans bascule 45°)';
+          document.getElementById('c5-diag-tag').textContent = state.c5Diag
+            ? `Diagonale = ${fr(m.diag5, 1)} mm`
+            : `Section = ${state.c4X} × ${state.c4Y} mm`;
+          if (state.chapter === 5) {
+            renderSectionCanvas('cv-c5-diamond', ev.evalC5Pre, m.diag5, m.diag5);
+            renderSectionCanvas('cv-c5-square', ev.evalC5Square, m.sec5X, m.sec5Y);
+          }
+
+          // --- Chapitre 6 : Assemblage 4 quartiers ---
+          document.getElementById('out-c6-rot').textContent = `${state.tileRot}°`;
+          document.getElementById('out-c6-side').textContent = `${state.c6Side} mm`;
+          document.getElementById('out-c6-cal').textContent = `${state.c6Cal} %`;
+          document.getElementById('out-c6-abr').textContent = `${state.c6Abr} %`;
+          document.getElementById('c6-chip-len').textContent = `${Math.round(m.l6)} mm`;
+          document.getElementById('c6-len-2').textContent = `Longueur résiduelle : L = ${Math.round(m.l6)} mm`;
+          document.getElementById('c6-chip-mass').textContent = `${Math.round(m.m6)} g`;
+          if (state.chapter === 6) {
+            renderSectionCanvas('cv-c6-blocks', ev.evalC6Blocks, m.sec5X * 2, m.sec5Y * 2);
+            renderSectionCanvas('cv-c6-final', ev.evalC6Final, state.c6Side, state.c6Side);
+          }
+
+          // --- Chapitre 7 : Coupe en biais & Retournement 1:1 ---
+          const isAuto = state.c7Mode === 'auto';
+          document.getElementById('c7-hman-box').classList.toggle('hidden', isAuto);
+          document.getElementById('c7-mode-auto').className = `btn ${isAuto ? 'brass' : ''}`;
+          document.getElementById('c7-mode-libre').className = `btn ${!isAuto ? 'brass' : ''}`;
+          document.getElementById('c7-snap-val').textContent = `${fr(m.H_opt, 1)} mm`;
+
+          document.getElementById('out-c7-theta').textContent = `${state.c7Theta}°`;
+          document.getElementById('out-c7-hman').textContent = `${fr(state.c7HMan, 1)} mm`;
+          document.getElementById('out-c7-wbar').textContent = `${state.c7WBar} mm`;
+          document.getElementById('out-c7-ef').textContent = `${fr(state.tgtE, 1)} mm`;
+          document.getElementById('c7-ef').value = state.tgtE;
+          document.getElementById('out-c7-etile').textContent = `${fr(state.c7Etile, 1)} mm`;
+          document.getElementById('out-c7-alpha').textContent = fr(state.c7Alpha, 2);
+          document.getElementById('out-c7-kerf').textContent = `${fr(state.c7Kerf, 1)} mm`;
+          document.getElementById('out-c7-lfinal').textContent = `${state.c7LossFinal} %`;
+
+          if (isAuto) {
+            document.getElementById('c7-hero-kicker').textContent = 'Épaisseur H à forger avant coupe (Objectif Carré 1:1)';
+            document.getElementById('c7-hero-val').textContent = `${fr(m.H, 1)} mm`;
+            document.getElementById('c7-hero-sub').textContent = `pour un barreau de ${fr(m.W7, 1)} mm de large coupé à ${state.c7Theta}° (L avant coupe : ${Math.round(m.l7Bar)} mm)`;
+          } else {
+            document.getElementById('c7-hero-kicker').textContent = 'Ratio final du motif sur le plat (Longueur / Hauteur)';
+            document.getElementById('c7-hero-val').textContent = `${fr(m.ratio, 2)} : 1,00`;
+            document.getElementById('c7-hero-sub').textContent = `avec H = ${fr(m.H, 1)} mm (optimal carré 1:1 : ${fr(m.H_opt, 1)} mm)`;
+          }
+
+          const pill = document.getElementById('c7-ratio-pill');
+          const ptxt = document.getElementById('c7-ratio-txt');
+          const diff = Math.round(Math.abs(m.ratio - 1) * 100);
+          if (m.ratio >= 0.96 && m.ratio <= 1.04) {
+            pill.className = 'ratio-pill ok';
+            ptxt.textContent = `${fr(m.ratio, 2)} : 1,00 — Carré parfait`;
+          } else if (m.ratio > 1.04 && m.ratio <= 1.20) {
+            pill.className = 'ratio-pill warn';
+            ptxt.textContent = `${fr(m.ratio, 2)} : 1,00 — Allongé (+${diff} %)`;
+          } else if (m.ratio >= 0.83 && m.ratio < 0.96) {
+            pill.className = 'ratio-pill warn';
+            ptxt.textContent = `${fr(m.ratio, 2)} : 1,00 — Tassé (−${diff} %)`;
+          } else {
+            pill.className = 'ratio-pill bad';
+            ptxt.textContent = `${fr(m.ratio, 2)} : 1,00 — Déformé (${m.ratio > 1 ? '+' : '−'}${diff} %)`;
+          }
+
+          const warns = [];
+          if (m.noForgeWarn) warns.push(`Épaisseur de tuile (${fr(state.c7Etile, 1)} mm) inférieure à l'épaisseur brute (${fr(m.ef, 1)} mm) : aucun écrasement appliqué.`);
+          if (m.H < 8) warns.push(`Épaisseur H très fine (${fr(m.H, 1)} mm) : augmentez l'angle θ ou réduisez l'épaisseur des tuiles.`);
+          if (m.N_dispo < state.reps) warns.push(`Volume actuel suffisant pour ${m.N_dispo} tuiles sur les ${state.reps} souhaitées : allongez la trousse au Chapitre 2.`);
+          const aEl = document.getElementById('c7-alert');
+          if (warns.length) {
+            aEl.classList.remove('hidden');
+            aEl.className = `alert-strip ${m.N_dispo === 0 ? 'bad' : ''}`;
+            aEl.textContent = warns.join(' ');
+          } else {
+            aEl.classList.add('hidden');
+          }
+
+          document.getElementById('c7-title-theta').textContent = state.c7Theta;
+          document.getElementById('c7-title-ef').textContent = fr(m.ef, 1);
+          document.getElementById('c7-chip-tiles').textContent = `${m.N_dispo}`;
+          document.getElementById('c7-chip-bar').textContent = `${Math.round(m.l7Bar)} × ${fr(m.W7, 1)} × ${fr(m.H, 1)} mm`;
+          document.getElementById('c7-chip-pitch').textContent = `${fr(m.pitch, 1)} mm`;
+          document.getElementById('c7-chip-ratio2').textContent = `${fr(m.ratio, 2)} : 1,00`;
+          document.getElementById('c7-chip-pre').textContent = `${fr(m.D, 1)} × ${fr(m.W7, 1)} × ${fr(state.c7Etile, 1)} mm`;
+          document.getElementById('c7-chip-post').textContent = `${fr(m.M_L, 1)} × ${fr(m.M_W, 1)} × ${fr(m.ef, 1)} mm`;
+          document.getElementById('c7-chip-blade').textContent = `${Math.round(m.bladeL_reps)} × ${fr(m.bladeH, 1)} × ${fr(m.ef, 1)} mm`;
+          document.getElementById('c7-chip-motif').textContent = `${fr(m.M_L, 1)} × ${fr(m.M_W, 1)} mm`;
+          document.getElementById('c7-chip-r').textContent = `×${fr(m.R, 2)}`;
+          document.getElementById('c7-chip-struct').textContent = repLabel;
+
+          if (state.chapter === 7) {
+            renderC7SVGs(m);
+            renderBladeProjection('cv-c7-blade', m, state.showSeams);
+          }
+
+          const pct = v => (m.v2 > 0 ? fr((v / m.v2) * 100, 1) : '0,0');
+          document.getElementById('c7-loss-tbody').innerHTML = `
+            <tr><td>Trousse initiale (Chapitre 2)</td><td class="num">${fr(m.v2, 1)}</td><td class="num">${Math.round(m.m2)}</td><td class="num">100,0 %</td></tr>
+            <tr><td>Pertes calamine cumulées (Ch. 3 à 6)</td><td class="num">−${fr(m.totalCal, 1)}</td><td class="num">−${Math.round(m.totalCal * DENSITE)}</td><td class="num">−${pct(m.totalCal)} %</td></tr>
+            <tr><td>Pertes abrasion &amp; dressage (Ch. 4 à 6)</td><td class="num">−${fr(m.totalAbr, 1)}</td><td class="num">−${Math.round(m.totalAbr * DENSITE)}</td><td class="num">−${pct(m.totalAbr)} %</td></tr>
+            <tr><td>Traits de scie &amp; chutes en biais</td><td class="num">−${fr(m.totalCut, 1)}</td><td class="num">−${Math.round(m.totalCut * DENSITE)}</td><td class="num">−${pct(m.totalCut)} %</td></tr>
+            <tr><td>Pertes finales (soudure &amp; rectification)</td><td class="num">−${fr(m.finalLoss7, 1)}</td><td class="num">−${Math.round(m.finalLoss7 * DENSITE)}</td><td class="num">−${pct(m.finalLoss7)} %</td></tr>
+            <tr class="total"><td>Masse utile finale (brut obtenu : ${Math.round(m.bladeL_reps)} mm)</td><td class="num">${fr(m.usableVol, 1)}</td><td class="num">${Math.round(m.usableMass)}</td><td class="num">${pct(m.usableVol)} %</td></tr>
+          `;
+        } catch (err) {
+          console.error('Erreur de simulation :', err);
+        }
+      }
+
+      /* =======================================================================
+         10. NAVIGATION & ÉCOUTEURS D'ÉVÉNEMENTS
+         ======================================================================= */
+      function goToChapter(num) {
+        state.chapter = num;
+        document.querySelectorAll('.step-tab').forEach(btn => {
+          const active = parseInt(btn.dataset.chapter, 10) === num;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-selected', active);
+        });
+        document.querySelectorAll('.chapter-panel').forEach(panel => {
+          panel.classList.toggle('active', panel.id === `chapter-${num}`);
+        });
+        updateAll();
+      }
+
+      document.querySelectorAll('.step-tab').forEach(b => {
+        b.addEventListener('click', () => goToChapter(parseInt(b.dataset.chapter, 10)));
+      });
+      document.querySelectorAll('[data-goto]').forEach(b => {
+        b.addEventListener('click', () => {
+          goToChapter(parseInt(b.dataset.goto, 10));
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      // Sélection d'un des 10 motifs du Chapitre 1
+      document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.preset;
+          const p = CATALOGUE[key];
+          if (!p) return;
+          state.presetKey = key;
+          state.layers = p.layers.slice();
+          state.c3X = p.c3X; document.getElementById('c3-x').value = p.c3X;
+          state.c3Y = p.c3Y; document.getElementById('c3-y').value = p.c3Y;
+          state.c4N = p.c4N; document.getElementById('c4-n').value = p.c4N;
+          state.c4X = p.c4X; document.getElementById('c4-x').value = p.c4X;
+          state.c4Y = p.c4Y; document.getElementById('c4-y').value = p.c4Y;
+          state.c5Diag = p.c5Diag;
+          state.c5X = p.c5X; document.getElementById('c5-x').value = p.c5X;
+          state.c5Y = p.c5Y; document.getElementById('c5-y').value = p.c5Y;
+          state.asm = p.asm;
+          state.tileRot = p.tileRot;
+
+          document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          syncAsmButtons();
+          syncFromTargetBrut();
+          updateAll();
+          showToast(`Motif sélectionné : ${p.nom}`);
+        });
+      });
+
+      // Multiplication section (1×1 à 6×6)
+      document.querySelectorAll('[data-mult]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.mult = parseInt(btn.dataset.mult, 10);
+          syncMultButtons();
+          updateAll();
+        });
+      });
+
+      // Répétitions sur la longueur du brut (2 à 8)
+      document.querySelectorAll('[data-reps]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.reps = parseInt(btn.dataset.reps, 10);
+          syncRepsControls();
+          syncFromTargetBrut();
+          updateAll();
+        });
+      });
+      document.getElementById('cat-reps').addEventListener('input', e => {
+        state.reps = parseInt(e.target.value, 10);
+        syncRepsControls();
+        syncFromTargetBrut();
+        updateAll();
+      });
+
+      // Objectif brut avant trempe (Ch. 1)
+      [['tgt-l', 'tgtL'], ['tgt-h', 'tgtH'], ['tgt-e', 'tgtE']].forEach(([id, key]) => {
+        document.getElementById(id).addEventListener('input', e => {
+          state[key] = parseFloat(e.target.value);
+          syncFromTargetBrut();
+          updateAll();
+        });
+      });
+
+      document.getElementById('cat-show-seams').addEventListener('change', e => {
+        state.showSeams = e.target.checked;
+        updateAll();
+      });
+
+      // Curseurs Chapitres 2 à 7
+      const bindings = [
+        ['c2-w', 'c2W'], ['c2-l', 'c2L'], ['c2-exc', 'eXC'], ['c2-e15', 'e15'],
+        ['c3-x', 'c3X'], ['c3-y', 'c3Y'], ['c3-chamfer', 'c3Chamfer'], ['c3-cal', 'c3Cal'],
+        ['c4-n', 'c4N'], ['c4-x', 'c4X'], ['c4-y', 'c4Y'], ['c4-cal', 'c4Cal'], ['c4-abr', 'c4Abr'],
+        ['c5-x', 'c5X'], ['c5-y', 'c5Y'], ['c5-cal', 'c5Cal'], ['c5-abr', 'c5Abr'],
+        ['c6-side', 'c6Side'], ['c6-cal', 'c6Cal'], ['c6-abr', 'c6Abr'],
+        ['c7-theta', 'c7Theta'], ['c7-hman', 'c7HMan'], ['c7-wbar', 'c7WBar'],
+        ['c7-ef', 'tgtE'], ['c7-etile', 'c7Etile'], ['c7-alpha', 'c7Alpha'],
+        ['c7-kerf', 'c7Kerf'], ['c7-lfinal', 'c7LossFinal']
+      ];
+      bindings.forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', e => {
+          state[key] = parseFloat(e.target.value);
+          if (id === 'c2-l') syncC2LenPills();
+          if (id === 'c7-ef') document.getElementById('tgt-e').value = state.tgtE;
+          updateAll();
+        });
+      });
+
+      // Boutons − et + tactiles génériques pour tous les curseurs
+      document.querySelectorAll('.step-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = document.getElementById(btn.dataset.target);
+          if (!input) return;
+          const step = parseFloat(input.step) || 1;
+          const min = parseFloat(input.min);
+          const max = parseFloat(input.max);
+          const dir = parseFloat(btn.dataset.dir);
+          const next = Math.min(max, Math.max(min, parseFloat(input.value) + dir * step));
+          input.value = Number(next.toFixed(2));
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+      });
+
+      // Longueurs rapides trousse (Ch. 2)
+      document.querySelectorAll('[data-c2len]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const v = parseFloat(btn.dataset.c2len);
+          state.c2L = v;
+          document.getElementById('c2-l').value = v;
+          syncC2LenPills();
+          updateAll();
+        });
+      });
+
+      // Constructeur de couches (Ch. 2)
+      document.getElementById('btn-add-xc').addEventListener('click', () => {
+        if (state.layers.length >= 28) { showToast('Maximum 28 couches atteint'); return; }
+        state.layers.push(0);
+        updateAll();
+      });
+      document.getElementById('btn-add-15').addEventListener('click', () => {
+        if (state.layers.length >= 28) { showToast('Maximum 28 couches atteint'); return; }
+        state.layers.push(1);
+        updateAll();
+      });
+      document.getElementById('btn-pop').addEventListener('click', () => {
+        if (state.layers.length <= 2) { showToast('Minimum 2 couches requises'); return; }
+        state.layers.pop();
+        updateAll();
+      });
+      document.getElementById('btn-invert').addEventListener('click', () => {
+        state.layers = state.layers.map(v => (v === 0 ? 1 : 0));
+        updateAll();
+        showToast('Aciers inversés (XC75 ↔ 15N20)');
+      });
+
+      // Diagonale 45° (Ch. 5)
+      document.getElementById('c5-use-diag').addEventListener('change', e => {
+        state.c5Diag = e.target.checked;
+        updateAll();
+      });
+
+      // Assemblage 4 quartiers & rotation 90° (Ch. 6)
+      document.querySelectorAll('[data-asm]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.asm = btn.dataset.asm;
+          syncAsmButtons();
+          updateAll();
+        });
+      });
+      document.getElementById('btn-rot-tile').addEventListener('click', () => {
+        state.tileRot = (state.tileRot + 90) % 360;
+        updateAll();
+      });
+
+      // Modes Chapitre 7
+      document.getElementById('c7-mode-auto').addEventListener('click', () => {
+        state.c7Mode = 'auto';
+        updateAll();
+      });
+      document.getElementById('c7-mode-libre').addEventListener('click', () => {
+        const m = computeAllMetrics();
+        const snapped = Math.min(40, Math.max(8, Math.round(m.H_opt * 2) / 2));
+        state.c7HMan = snapped;
+        document.getElementById('c7-hman').value = snapped;
+        state.c7Mode = 'libre';
+        updateAll();
+      });
+      document.getElementById('btn-c7-snap').addEventListener('click', () => {
+        const m = computeAllMetrics();
+        const snapped = Math.min(40, Math.max(8, Number(m.H_opt.toFixed(1))));
+        state.c7HMan = snapped;
+        document.getElementById('c7-hman').value = snapped;
+        updateAll();
+        showToast(`H ajusté à ${fr(snapped, 1)} mm (Carré 1:1)`);
+      });
+
+      // Initialisation au chargement
+      renderCatalogueThumbnails();
+      syncFromTargetBrut();
+      updateAll();
+    })();
+  </script>
+</body>
+</html>

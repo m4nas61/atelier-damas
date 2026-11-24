@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Atelier Damas — par Samuel Grosset</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0b1614; color: #ece7dc; font-family: 'Inter', sans-serif;
+      height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
+    }
+    header {
+      background: #0e1d1a; border-bottom: 1px solid rgba(198,162,107,0.28);
+      padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 10px;
+    }
+    .brand h1 {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.35rem;
+      letter-spacing: 0.08em; color: #f3ede0; font-weight: 600;
+    }
+    .brand span {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 0.9rem; color: #c6a26b; margin-left: 8px;
+    }
+    nav { display: flex; gap: 8px; }
+    nav button {
+      background: transparent; color: #b8c2be; border: 1px solid rgba(198,162,107,0.25);
+      padding: 7px 14px; border-radius: 6px; font-size: 0.85rem; cursor: pointer;
+      transition: all 0.2s; font-family: 'Inter', sans-serif;
+    }
+    nav button.active, nav button:hover {
+      background: rgba(198,162,107,0.16); color: #f3ede0; border-color: #c6a26b;
+    }
+    iframe { flex: 1; width: 100%; border: none; background: #0b1614; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>ATELIER DAMAS<span>par Samuel Grosset</span></h1>
+    </div>
+    <nav>
+      <button class="active" onclick="openTab('decouverte.html', this)">Découverte</button>
+      <button onclick="openTab('mosaique.html', this)">Mosaïque</button>
+      <button onclick="openTab('plume.html', this)">Plume</button>
+    </nav>
+  </header>
+  <iframe id="viewer" src="decouverte.html"></iframe>
+  <script>
+    function openTab(file, btn) {
+      document.getElementById('viewer').src = file;
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>
